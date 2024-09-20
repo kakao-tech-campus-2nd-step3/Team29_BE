@@ -20,32 +20,32 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
-@Table(name="comment")
+@Table(name = "comment")
 @Getter
-@NoArgsConstructor(access= PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class Comment extends RootEntity<Long> {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    @Column(nullable= false)
+    @Column(nullable = false)
     private Long member_id;
-    @Column(nullable= false)
+    @Column(nullable = false)
     private Long post_id;
-    @Column(nullable= false)
+    @Column(nullable = false)
     private Long parent_comment_id;
-    @Column(nullable= false)
+    @Column(nullable = false)
     private String content;
-    @Column(nullable= false)
+    @Column(nullable = false)
     private LocalDateTime created_at;
-    @Column(nullable= false)
+    @Column(nullable = false)
     private LocalDateTime updated_at;
 
     public Comment(
             @Auth memberId,
             Long post_id,
             String content
-            ) {
+    ) {
         this.member_id = memberId;
         this.post_id = post_id;
         this.content = content;
