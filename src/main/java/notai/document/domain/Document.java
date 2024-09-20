@@ -12,13 +12,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 import notai.folder.domain.Folder;
 
 @Entity
 @Table(name = "document")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Document extends RootEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,9 +43,6 @@ public class Document extends RootEntity<Long> {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "status")
     private DocumentStatus status;
-
-    protected Document() {
-    }
 
     public Document(Folder folder, String name, Integer size, Integer totalPage, DocumentStatus status) {
         this.folder = folder;

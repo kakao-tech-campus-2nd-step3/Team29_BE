@@ -10,12 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 
 @Entity
 @Table(name = "folder")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Folder extends RootEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +32,6 @@ public class Folder extends RootEntity<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_folder_id", referencedColumnName = "id")
     private Folder parentFolder;
-
-    protected Folder() {
-    }
 
     public Folder(Long memberId, String name) {
         this.memberId = memberId;
