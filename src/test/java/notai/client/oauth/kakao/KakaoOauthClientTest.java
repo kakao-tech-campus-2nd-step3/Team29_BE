@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -26,25 +28,33 @@ public class KakaoOauthClientTest {
 
     @Test
     public void testFetchMember() {
+        long id = 12345L;
         String accessToken = "testAccessToken";
-        KakaoMemberResponse kakaoMemberResponse = new KakaoMemberResponse(
-                12345L,
-                true,
-                null,
-                new KakaoMemberResponse.KakaoAccount(
-                        new KakaoMemberResponse.Profile("nickname"),
-                        false,
-                        true,
-                        true,
-                        "email@example.com"));
+        String email = "email@example.com";
+        boolean isEmailVerified = true;
+        boolean isEmailValid = true;
+        boolean emailNeedsAgreement = false;
+        LocalDateTime connectedAt = LocalDateTime.now();
+        boolean hasSignedUp = true;
+        String nickname = "nickname";
+        KakaoMemberResponse.Profile profile = new KakaoMemberResponse.Profile(nickname);
+
+        KakaoMemberResponse.KakaoAccount kakaoAccount = new KakaoMemberResponse.KakaoAccount(
+                profile,
+                emailNeedsAgreement,
+                isEmailValid,
+                isEmailVerified,
+                email);
+
+        KakaoMemberResponse kakaoMemberResponse = new KakaoMemberResponse(id, hasSignedUp, connectedAt, kakaoAccount);
 
         when(kakaoClient.fetchMember(accessToken)).thenReturn(kakaoMemberResponse);
 
         Member member = kakaoOauthClient.fetchMember(accessToken);
 
-        assertEquals("12345", member.getOauthId().getOauthId());
+        assertEquals(String.valueOf(id), member.getOauthId().getOauthId());
         assertEquals(OauthProvider.KAKAO, member.getOauthId().getOauthProvider());
-        assertEquals("nickname", member.getNickname());
-        assertEquals("email@example.com", member.getEmail());
+        assertEquals(nickname, member.getNickname());
+        assertEquals(email, member.getEmail());
     }
 }
