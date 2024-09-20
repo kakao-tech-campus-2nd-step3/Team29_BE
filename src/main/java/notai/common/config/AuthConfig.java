@@ -2,7 +2,6 @@ package notai.common.config;
 
 import lombok.RequiredArgsConstructor;
 import notai.auth.AuthArgumentResolver;
-import notai.member.application.MemberService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

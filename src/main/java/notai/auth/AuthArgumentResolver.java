@@ -4,7 +4,6 @@ package notai.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import notai.common.exception.type.UnAuthorizedException;
-import notai.member.domain.Member;
 import notai.member.domain.MemberRepository;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
