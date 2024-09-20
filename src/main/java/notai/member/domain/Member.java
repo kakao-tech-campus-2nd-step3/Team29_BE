@@ -37,4 +37,8 @@ public class Member extends RootEntity<Long> {
 		this.email = email;
 		this.nickname = nickname;
 	}
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 }
