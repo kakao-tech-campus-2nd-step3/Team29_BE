@@ -27,7 +27,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         String token = header.substring(BEARER_PREFIX_LENGTH);
-        tokenService.extractMemberId(token);
+        Long memberId = tokenService.extractMemberId(token);
+        request.setAttribute("memberId", memberId);
 
         return true;
     }
