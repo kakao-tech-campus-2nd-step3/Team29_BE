@@ -1,11 +1,11 @@
-package notai.ai_task.presentation;
+package notai.aiTask.presentation;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import notai.ai_task.application.AITaskService;
-import notai.ai_task.application.command.AITaskCommand;
-import notai.ai_task.presentation.request.AITaskRequest;
-import notai.ai_task.presentation.response.AITaskResponse;
+import notai.aiTask.application.AITaskService;
+import notai.aiTask.application.command.AITaskCommand;
+import notai.aiTask.presentation.request.AITaskRequest;
+import notai.aiTask.presentation.response.AITaskResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,4 +1,4 @@
-package notai.ai_task.presentation.response;
+package notai.aiTask.presentation.response;
 
 import java.time.LocalDateTime;
 

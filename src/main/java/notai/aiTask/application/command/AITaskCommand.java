@@ -1,4 +1,4 @@
-package notai.ai_task.application.command;
+package notai.aiTask.application.command;
 
 import java.util.List;
 

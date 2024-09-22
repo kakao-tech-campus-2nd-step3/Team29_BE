@@ -1,11 +1,11 @@
-package notai.ai_task.application;
+package notai.aiTask.application;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import notai.ai_task.application.command.AITaskCommand;
-import notai.ai_task.domain.AITaskRepository;
-import notai.ai_task.presentation.response.AITaskResponse;
+import notai.aiTask.application.command.AITaskCommand;
+import notai.aiTask.domain.AITaskRepository;
+import notai.aiTask.presentation.response.AITaskResponse;
 import org.springframework.stereotype.Service;
 
 /**

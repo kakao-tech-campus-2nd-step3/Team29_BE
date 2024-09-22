@@ -1,9 +1,9 @@
-package notai.ai_task.presentation.request;
+package notai.aiTask.presentation.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
-import notai.ai_task.application.command.AITaskCommand;
+import notai.aiTask.application.command.AITaskCommand;
 
 public record AITaskRequest(
 

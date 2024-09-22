@@ -1,4 +1,4 @@
-package notai.ai_task.domain;
+package notai.aiTask.domain;
 
 import static lombok.AccessLevel.PROTECTED;
 

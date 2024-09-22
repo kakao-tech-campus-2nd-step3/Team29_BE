@@ -1,4 +1,4 @@
-package notai.ai_task.domain;
+package notai.aiTask.domain;
 
 public enum TaskStatus {
     PENDING,
