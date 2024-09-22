@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -22,22 +20,18 @@ public class Post {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private Long member_id;
-    @Column(nullable = false)
+    private Long memberId;
+    @Column(length = 255, nullable = false)
     private String title;
-    @Column(nullable = false)
+    @Column(length = 255, nullable = false)
     private String contents;
-    @Column(nullable = false)
-    private LocalDateTime created_at;
-    @Column(nullable = false)
-    private LocalDateTime updated_at;
 
     public Post(
-            @Auth memberId,
+            Long memberId,
             String title,
             String contents
     ) {
-        this.member_id = memberId;
+        this.memberId = memberId;
         this.title = title;
         this.contents = contents;
     }
