@@ -29,25 +29,20 @@ public class Comment extends RootEntity<Long> {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private Long member_id;
+    private Long memberId;
     @Column(nullable = false)
-    private Long post_id;
+    private Long postId;
     @Column(nullable = false)
-    private Long parent_comment_id;
-    @Column(nullable = false)
+    private Long parentCommentId;
+    @Column(length = 255, nullable = false)
     private String content;
-    @Column(nullable = false)
-    private LocalDateTime created_at;
-    @Column(nullable = false)
-    private LocalDateTime updated_at;
-
     public Comment(
-            @Auth memberId,
-            Long post_id,
+            Long memberId,
+            Long postId,
             String content
     ) {
-        this.member_id = memberId;
-        this.post_id = post_id;
+        this.memberId = memberId;
+        this.postId = postId;
         this.content = content;
     }
 

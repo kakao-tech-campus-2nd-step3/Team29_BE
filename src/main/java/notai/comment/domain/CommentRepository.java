@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, BigInteger> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 }
