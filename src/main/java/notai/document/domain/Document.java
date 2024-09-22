@@ -31,7 +31,7 @@ public class Document extends RootEntity<Long> {
     @JoinColumn(name = "folder_id", referencedColumnName = "id")
     private Folder folder;
     @NotNull
-    @Column(name = "name")
+    @Column(name = "name", length = 50)
     private String name;
     @NotNull
     @Column(name = "size")

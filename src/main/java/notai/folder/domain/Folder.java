@@ -27,7 +27,7 @@ public class Folder extends RootEntity<Long> {
     @Column(name = "member_id")
     private Long memberId;
     @NotNull
-    @Column(name = "name")
+    @Column(name = "name", length = 50)
     private String name;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_folder_id", referencedColumnName = "id")
