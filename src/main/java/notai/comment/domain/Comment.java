@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,13 +27,17 @@ public class Comment extends RootEntity<Long> {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @NotNull
+    @JoinColumn(name = "member_id")
     private Member member;
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private Long postId;
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private Long parentCommentId;
-    @Column(length = 255, nullable = false)
+    @NotNull
+    @Column(length = 255)
     private String content;
     public Comment(
             Member member,
