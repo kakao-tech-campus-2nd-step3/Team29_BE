@@ -33,6 +33,6 @@ public class AITaskService {
     }
 
     private UUID sendRequestToAIServer() {
-        return UUID.randomUUID();
+        return UUID.randomUUID(); // 임시 값, 실제 구현에선 AI 서버에서 UUID 가 반환됨.
     }
 }
