@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,11 +24,14 @@ public class Post {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     @ManyToOne
+    @NotNull
     @JoinColumn(name="member_id")
     private Member member;
-    @Column(length = 255, nullable = false)
+    @NotNull
+    @Column(length = 255)
     private String title;
-    @Column(length = 255, nullable = false)
+    @NotNull
+    @Column(length = 255)
     private String contents;
 
     public Post(
