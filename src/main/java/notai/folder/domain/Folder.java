@@ -23,9 +23,10 @@ public class Folder extends RootEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
     @NotNull
-    @Column(name = "member_id")
-    private Long memberId;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
     @NotNull
     @Column(name = "name", length = 50)
     private String name;
@@ -33,13 +34,13 @@ public class Folder extends RootEntity<Long> {
     @JoinColumn(name = "parent_folder_id", referencedColumnName = "id")
     private Folder parentFolder;
 
-    public Folder(Long memberId, String name) {
-        this.memberId = memberId;
+    public Folder(Member member, String name) {
+        this.member = member;
         this.name = name;
     }
 
-    public Folder(Long memberId, String name, Folder parentFolder) {
-        this.memberId = memberId;
+    public Folder(Member member, String name, Folder parentFolder) {
+        this.member = member;
         this.name = name;
         this.parentFolder = parentFolder;
     }
