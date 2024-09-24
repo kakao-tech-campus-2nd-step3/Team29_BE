@@ -29,8 +29,7 @@ public class MemberController {
 
     @PostMapping("/oauth/login/{oauthProvider}")
     public ResponseEntity<MemberOauthLoginResopnse> loginWithOauth(
-            @PathVariable(value = "oauthProvider") OauthProvider oauthProvider,
-            @RequestBody OauthLoginRequest request
+            @PathVariable(value = "oauthProvider") OauthProvider oauthProvider, @RequestBody OauthLoginRequest request
     ) {
         Member member = oauthClient.fetchMember(oauthProvider, request.oauthAccessToken());
         Long memberId = memberService.login(member);

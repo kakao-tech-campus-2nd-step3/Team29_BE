@@ -1,21 +1,16 @@
 package notai.comment.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
+import static lombok.AccessLevel.PROTECTED;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 import notai.member.domain.Member;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
+import notai.post.domain.Post;
 
 @Entity
 @Table(name = "comment")
@@ -23,29 +18,35 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class Comment extends RootEntity<Long> {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    @ManyToOne
+
     @NotNull
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
     @NotNull
-    @Column
-    private Long postId;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     @NotNull
-    @Column
-    private Long parentCommentId;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "parent_comment_id", referencedColumnName = "id")
+    private Comment parentComment;
+
     @NotNull
     @Column(length = 255)
     private String content;
+
     public Comment(
-            Member member,
-            Long postId,
-            String content
+            Member member, Post post, String content
     ) {
         this.member = member;
-        this.postId = postId;
+        this.post = post;
         this.content = content;
     }
 

@@ -1,16 +1,14 @@
 package notai.problem.domain;
 
-import static lombok.AccessLevel.PROTECTED;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
+import static lombok.AccessLevel.PROTECTED;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
+import notai.document.domain.Document;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -18,11 +16,13 @@ import notai.common.domain.RootEntity;
 public class Problem extends RootEntity<Long> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @NotNull
-    private Long documentId;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "document_id")
+    private Document document;
 
     @NotNull
     private Integer pageNumber;

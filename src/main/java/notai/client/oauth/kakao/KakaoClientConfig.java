@@ -15,13 +15,13 @@ public class KakaoClientConfig {
 
     @Bean
     public KakaoClient kakaoClient() {
-        RestClient restClient = RestClient.builder()
-                .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {
+        RestClient restClient = RestClient.builder().defaultStatusHandler(HttpStatusCode::isError,
+                (request, response) -> {
                     String responseData = new String(response.getBody().readAllBytes());
                     log.error("카카오톡 API 오류 : {}", responseData);
                     throw new ExternalApiException(responseData, response.getStatusCode().value());
-                })
-                .build();
+                }
+        ).build();
         return createHttpInterface(restClient, KakaoClient.class);
     }
 }
