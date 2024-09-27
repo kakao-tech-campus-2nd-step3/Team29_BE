@@ -5,7 +5,7 @@ import notai.member.domain.OauthProvider;
 
 public interface OauthClient {
 
-	OauthProvider oauthProvider();
+    OauthProvider oauthProvider();
 
-	Member fetchMember(String accessToken);
+    Member fetchMember(String accessToken);
 }
