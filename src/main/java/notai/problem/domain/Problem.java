@@ -1,14 +1,15 @@
 package notai.problem.domain;
 
 import jakarta.persistence.*;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
-import static lombok.AccessLevel.PROTECTED;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 import notai.document.domain.Document;
+
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -29,4 +30,13 @@ public class Problem extends RootEntity<Long> {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    public Problem(Document document, Integer pageNumber) {
+        this.document = document;
+        this.pageNumber = pageNumber;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
