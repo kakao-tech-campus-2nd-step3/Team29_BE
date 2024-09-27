@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
+import notai.member.domain.Member;
 
 @Entity
 @Table(name = "folder")
