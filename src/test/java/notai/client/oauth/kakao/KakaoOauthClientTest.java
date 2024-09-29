@@ -2,16 +2,15 @@ package notai.client.oauth.kakao;
 
 import notai.member.domain.Member;
 import notai.member.domain.OauthProvider;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 public class KakaoOauthClientTest {
 
@@ -39,12 +38,12 @@ public class KakaoOauthClientTest {
         String nickname = "nickname";
         KakaoMemberResponse.Profile profile = new KakaoMemberResponse.Profile(nickname);
 
-        KakaoMemberResponse.KakaoAccount kakaoAccount = new KakaoMemberResponse.KakaoAccount(
-                profile,
+        KakaoMemberResponse.KakaoAccount kakaoAccount = new KakaoMemberResponse.KakaoAccount(profile,
                 emailNeedsAgreement,
                 isEmailValid,
                 isEmailVerified,
-                email);
+                email
+        );
 
         KakaoMemberResponse kakaoMemberResponse = new KakaoMemberResponse(id, hasSignedUp, connectedAt, kakaoAccount);
 

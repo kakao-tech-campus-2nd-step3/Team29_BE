@@ -1,13 +1,12 @@
 package notai.client.oauth.kakao;
 
 import lombok.extern.slf4j.Slf4j;
+import static notai.client.HttpInterfaceUtil.createHttpInterface;
 import notai.common.exception.type.ExternalApiException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.RestClient;
-
-import static notai.client.HttpInterfaceUtil.createHttpInterface;
 
 @Slf4j
 @Configuration

@@ -7,7 +7,10 @@ import static lombok.AccessLevel.PROTECTED;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
+import notai.common.exception.type.NotFoundException;
 import notai.member.domain.Member;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "folder")
@@ -20,7 +23,7 @@ public class Folder extends RootEntity<Long> {
     private Long id;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
@@ -30,6 +33,7 @@ public class Folder extends RootEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_folder_id", referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Folder parentFolder;
 
     public Folder(Member member, String name) {
@@ -49,5 +53,11 @@ public class Folder extends RootEntity<Long> {
 
     public void moveNewParentFolder(Folder parentFolder) {
         this.parentFolder = parentFolder;
+    }
+
+    public void validateOwner(Long memberId) {
+        if (!this.member.getId().equals(memberId)) {
+            throw new NotFoundException("해당 이용자가 보유한 폴더 중 이 폴더가 존재하지 않습니다.");
+        }
     }
 }
