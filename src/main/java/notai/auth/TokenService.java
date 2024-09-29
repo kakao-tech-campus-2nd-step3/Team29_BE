@@ -29,17 +29,20 @@ public class TokenService {
     }
 
     public String createAccessToken(Long memberId) {
-        return Jwts.builder().claim(MEMBER_ID_CLAIM,
-                memberId
-        ).issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMillis)).signWith(secretKey,
-                Jwts.SIG.HS512
-        ).compact();
+        return Jwts.builder()
+                .claim(MEMBER_ID_CLAIM, memberId)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMillis))
+                .signWith(secretKey, Jwts.SIG.HS512)
+                .compact();
     }
 
     private String createRefreshToken() {
-        return Jwts.builder().issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMillis)).signWith(secretKey,
-                Jwts.SIG.HS512
-        ).compact();
+        return Jwts.builder()
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMillis))
+                .signWith(secretKey, Jwts.SIG.HS512)
+                .compact();
     }
 
     public TokenPair createTokenPair(Long memberId) {
@@ -68,9 +71,12 @@ public class TokenService {
 
     public Long extractMemberId(String token) {
         try {
-            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get(MEMBER_ID_CLAIM,
-                    Long.class
-            );
+            return Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get(MEMBER_ID_CLAIM, Long.class);
         } catch (Exception e) {
             throw new UnAuthorizedException("유효하지 않은 토큰입니다.");
         }
