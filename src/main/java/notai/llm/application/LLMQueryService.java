@@ -1,6 +1,7 @@
 package notai.llm.application;
 
 import lombok.RequiredArgsConstructor;
+import notai.common.exception.type.BadRequestException;
 import notai.common.exception.type.InternalServerErrorException;
 import notai.common.exception.type.NotFoundException;
 import notai.document.domain.DocumentRepository;
@@ -79,7 +80,7 @@ public class LLMQueryService {
     private List<Long> getSummaryIds(Long documentId) {
         List<Long> summaryIds = summaryQueryRepository.getSummaryIdsByDocumentId(documentId);
         if (summaryIds.isEmpty()) {
-            throw new NotFoundException("AI 기능을 요청한 기록이 없습니다.");
+            throw new BadRequestException("AI 기능을 요청한 기록이 없습니다.");
         }
         return summaryIds;
     }
