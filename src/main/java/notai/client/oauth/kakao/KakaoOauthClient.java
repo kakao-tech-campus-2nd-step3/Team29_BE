@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import notai.client.oauth.OauthClient;
 import notai.member.domain.Member;
 import notai.member.domain.OauthProvider;
-import static notai.member.domain.OauthProvider.KAKAO;
 import org.springframework.stereotype.Component;
+
+import static notai.member.domain.OauthProvider.KAKAO;
 
 @Component
 @RequiredArgsConstructor
