@@ -1,9 +1,8 @@
 package notai.client.oauth.kakao;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.service.annotation.GetExchange;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public interface KakaoClient {
 
