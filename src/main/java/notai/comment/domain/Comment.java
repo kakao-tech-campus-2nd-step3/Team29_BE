@@ -1,16 +1,17 @@
 package notai.comment.domain;
 
 import jakarta.persistence.*;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
-import static lombok.AccessLevel.PROTECTED;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 import notai.member.domain.Member;
 import notai.post.domain.Post;
+
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(name = "comment")
