@@ -53,6 +53,12 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // PDF
+    implementation 'org.apache.pdfbox:pdfbox:3.0.2'
+
+    // OCR
+    implementation 'net.sourceforge.tess4j:tess4j:5.13.0'
 }
 
 tasks.named('test') {

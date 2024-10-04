@@ -35,8 +35,7 @@ public class ProblemQueryRepository {
                         problem.content
                 ))
                 .from(problem)
-                .where(problem.document.id.eq(documentId)
-                        .and(problem.content.isNotNull()))
+                .where(problem.document.id.eq(documentId).and(problem.content.isNotNull()))
                 .fetch();
     }
 }
