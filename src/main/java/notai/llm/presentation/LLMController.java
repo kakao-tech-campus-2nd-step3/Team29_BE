@@ -42,7 +42,7 @@ public class LLMController {
     @GetMapping("/results/{documentId}")
     public ResponseEntity<LLMResultsResponse> findTaskResult(@PathVariable("documentId") Long documentId) {
         LLMResultsResult result = llmQueryService.findTaskResult(documentId);
-        return ResponseEntity.ok(LLMResultsResponse.of(result));
+        return ResponseEntity.ok(LLMResultsResponse.from(result));
     }
 
     @PostMapping("/callback")
