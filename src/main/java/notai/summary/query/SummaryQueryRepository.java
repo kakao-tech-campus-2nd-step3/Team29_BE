@@ -3,8 +3,8 @@ package notai.summary.query;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import notai.summary.query.result.SummaryPageContentResult;
 import notai.summary.domain.QSummary;
+import notai.summary.query.result.SummaryPageContentResult;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,8 +35,7 @@ public class SummaryQueryRepository {
                         summary.content
                 ))
                 .from(summary)
-                .where(summary.document.id.eq(documentId)
-                        .and(summary.content.isNotNull()))
+                .where(summary.document.id.eq(documentId).and(summary.content.isNotNull()))
                 .fetch();
     }
 }

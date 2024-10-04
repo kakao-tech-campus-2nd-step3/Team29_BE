@@ -11,11 +11,11 @@ public record LLMResultsResponse(
         Integer totalPages,
         List<Result> results
 ) {
-    public static LLMResultsResponse of(LLMResultsResult result) {
+    public static LLMResultsResponse from(LLMResultsResult result) {
         return new LLMResultsResponse(
                 result.documentId(),
                 result.results().size(),
-                result.results().stream().map(Result::of).toList()
+                result.results().stream().map(Result::from).toList()
         );
     }
 
@@ -23,8 +23,8 @@ public record LLMResultsResponse(
             Integer pageNumber,
             Content content
     ) {
-        public static Result of(LLMResult result) {
-            return new Result(result.pageNumber(), Content.of(result.content()));
+        public static Result from(LLMResult result) {
+            return new Result(result.pageNumber(), Content.from(result.content()));
         }
     }
 
@@ -32,7 +32,7 @@ public record LLMResultsResponse(
             String summary,
             String problem
     ) {
-        public static Content of(LLMContent result) {
+        public static Content from(LLMContent result) {
             return new Content(result.summary(), result.problem());
         }
     }
