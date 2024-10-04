@@ -1,17 +1,14 @@
 package notai.folder.domain;
 
 import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
+import static lombok.AccessLevel.PROTECTED;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 import notai.common.exception.type.NotFoundException;
 import notai.member.domain.Member;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(name = "folder")
@@ -34,7 +31,6 @@ public class Folder extends RootEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_folder_id", referencedColumnName = "id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Folder parentFolder;
 
     public Folder(Member member, String name) {
