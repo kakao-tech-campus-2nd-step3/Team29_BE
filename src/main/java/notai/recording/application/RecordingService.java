@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import notai.common.domain.vo.FilePath;
 import notai.common.exception.type.BadRequestException;
 import notai.common.exception.type.InternalServerErrorException;
-import notai.common.exception.type.NotFoundException;
 import notai.common.utils.AudioDecoder;
 import notai.common.utils.FileManager;
 import notai.document.domain.Document;
@@ -35,9 +34,7 @@ public class RecordingService {
     private String audioBasePath;
 
     public RecordingSaveResult saveRecording(RecordingSaveCommand command) {
-        // TODO: document 개발 코드 올려주시면, getById 로 수정
-        Document foundDocument =
-                documentRepository.findById(command.documentId()).orElseThrow(() -> new NotFoundException(""));
+        Document foundDocument = documentRepository.getById(command.documentId());
 
         Recording recording = new Recording(foundDocument);
         Recording savedRecording = recordingRepository.save(recording);

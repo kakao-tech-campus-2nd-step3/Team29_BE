@@ -102,8 +102,10 @@ public class LLMQueryService {
     }
 
     private String findProblemContentByPageNumber(List<ProblemPageContentResult> results, int pageNumber) {
-        return results.stream().filter(result -> result.pageNumber() == pageNumber).findFirst().map(
-                ProblemPageContentResult::content).orElseThrow(() -> new InternalServerErrorException(
-                "AI 요약 및 문제 생성 중에 문제가 발생했습니다.")); // 요약 페이지와 문제 페이지가 불일치
+        return results.stream()
+                      .filter(result -> result.pageNumber() == pageNumber)
+                      .findFirst()
+                      .map(ProblemPageContentResult::content)
+                      .orElseThrow(() -> new InternalServerErrorException("AI 요약 및 문제 생성 중에 문제가 발생했습니다.")); // 요약 페이지와 문제 페이지가 불일치
     }
 }

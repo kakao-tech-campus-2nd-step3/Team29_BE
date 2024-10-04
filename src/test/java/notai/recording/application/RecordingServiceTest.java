@@ -22,7 +22,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,7 +64,7 @@ class RecordingServiceTest {
         Recording savedRecording = new Recording(document);
         ReflectionTestUtils.setField(savedRecording, "id", 1L);
 
-        given(documentRepository.findById(anyLong())).willReturn(Optional.of(document));
+        given(documentRepository.getById(anyLong())).willReturn(document);
         given(recordingRepository.save(any(Recording.class))).willReturn(savedRecording);
         given(document.getName()).willReturn("안녕하세요백종원입니다");
 
@@ -88,7 +87,7 @@ class RecordingServiceTest {
         Recording savedRecording = new Recording(document);
         ReflectionTestUtils.setField(savedRecording, "id", 1L);
 
-        given(documentRepository.findById(anyLong())).willReturn(Optional.of(document));
+        given(documentRepository.getById(anyLong())).willReturn(document);
         given(recordingRepository.save(any(Recording.class))).willReturn(savedRecording);
         given(document.getName()).willReturn("안녕하세요백종원입니다");
 
