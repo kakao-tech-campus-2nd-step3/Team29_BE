@@ -36,4 +36,8 @@ public class Recording extends RootEntity<Long> {
     public void updateFilePath(FilePath filePath) {
         this.filePath = filePath;
     }
+
+    public boolean isRecordingOwnedByDocument(Long documentId) {
+        return this.document.getId().equals(documentId);
+    }
 }
