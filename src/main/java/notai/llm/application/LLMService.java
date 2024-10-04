@@ -1,7 +1,6 @@
 package notai.llm.application;
 
 import lombok.RequiredArgsConstructor;
-import notai.common.exception.type.NotFoundException;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.llm.application.command.LLMSubmitCommand;
@@ -35,9 +34,7 @@ public class LLMService {
     private final ProblemRepository problemRepository;
 
     public LLMSubmitResult submitTask(LLMSubmitCommand command) {
-        // TODO: document 개발 코드 올려주시면, getById 로 수정
-        Document foundDocument =
-                documentRepository.findById(command.documentId()).orElseThrow(() -> new NotFoundException(""));
+        Document foundDocument = documentRepository.getById(command.documentId());
 
         command.pages().forEach(pageNumber -> {
             UUID taskId = sendRequestToAIServer();
