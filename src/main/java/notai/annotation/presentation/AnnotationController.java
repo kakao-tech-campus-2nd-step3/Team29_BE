@@ -1,80 +1,36 @@
-package notai.annotation.presentation;
+package notai.annotation.application;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import notai.annotation.application.AnnotationQueryService;
-import notai.annotation.application.AnnotationService;
-import notai.annotation.presentation.request.CreateAnnotationRequest;
+import notai.annotation.domain.Annotation;
+import notai.annotation.domain.AnnotationRepository;
 import notai.annotation.presentation.response.AnnotationResponse;
-import notai.common.exception.type.BadRequestException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import notai.common.exception.type.NotFoundException;
+import notai.document.domain.DocumentRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/documents/{documentId}/annotations")
+@Service
 @RequiredArgsConstructor
-public class AnnotationController {
+public class AnnotationQueryService {
 
-    private final AnnotationService annotationService;
-    private final AnnotationQueryService annotationQueryService;
+    private final AnnotationRepository annotationRepository;
+    private final DocumentRepository documentRepository;
 
-    @PostMapping
-    public ResponseEntity<AnnotationResponse> createAnnotation(
-            @PathVariable Long documentId,
-            @RequestBody @Valid CreateAnnotationRequest request) {
+    @Transactional(readOnly = true)
+    public List<AnnotationResponse> getAnnotationsByDocumentAndPageNumbers(Long documentId, List<Integer> pageNumbers) {
+        documentRepository.findById(documentId)
+                .orElseThrow(() -> new NotFoundException("문서를 찾을 수 없습니다. ID: " + documentId)); // documentRepository.getById(documentId);로 변경
 
-        AnnotationResponse response = annotationService.createAnnotation(
-                documentId,
-                request.pageNumber(),
-                request.x(),
-                request.y(),
-                request.width(),
-                request.height(),
-                request.content()
-        );
+        List<Annotation> annotations = annotationRepository.findByDocumentIdAndPageNumberIn(documentId, pageNumbers);
+        if (annotations.isEmpty()) {
+            throw new NotFoundException("해당 문서에 해당 페이지 번호의 주석이 존재하지 않습니다.");
+        }
 
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-
-    @GetMapping
-    public ResponseEntity<List<AnnotationResponse>> getAnnotations(
-            @PathVariable Long documentId,
-            @RequestParam List<Integer> pageNumbers) {
-
-        List<AnnotationResponse> response = annotationQueryService.getAnnotationsByDocumentAndPageNumbers(documentId, pageNumbers);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PutMapping("/{annotationId}")
-    public ResponseEntity<AnnotationResponse> updateAnnotation(
-            @PathVariable Long documentId,
-            @PathVariable Long annotationId,
-            @RequestBody @Valid CreateAnnotationRequest request) {
-
-        AnnotationResponse response = annotationService.updateAnnotation(
-                documentId,
-                annotationId,
-                request.x(),
-                request.y(),
-                request.width(),
-                request.height(),
-                request.content()
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{annotationId}")
-    public ResponseEntity<Void> deleteAnnotation(
-            @PathVariable Long documentId,
-            @PathVariable Long annotationId) {
-
-        annotationService.deleteAnnotation(documentId, annotationId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return annotations.stream()
+                .map(AnnotationResponse::from)
+                .collect(Collectors.toList());
     }
 }

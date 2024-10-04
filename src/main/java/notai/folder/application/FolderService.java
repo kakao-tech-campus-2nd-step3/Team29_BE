@@ -1,7 +1,7 @@
 package notai.folder.application;
 
 import lombok.RequiredArgsConstructor;
-import notai.common.exception.type.BadRequestException;
+import notai.document.application.DocumentService;
 import notai.folder.application.result.FolderMoveResult;
 import notai.folder.application.result.FolderSaveResult;
 import notai.folder.domain.Folder;
@@ -12,12 +12,15 @@ import notai.member.domain.Member;
 import notai.member.domain.MemberRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FolderService {
 
     private final FolderRepository folderRepository;
     private final MemberRepository memberRepository;
+    private final DocumentService documentService;
 
     public FolderSaveResult saveRootFolder(Long memberId, FolderSaveRequest folderSaveRequest) {
         Member member = memberRepository.getById(memberId);
@@ -52,10 +55,14 @@ public class FolderService {
     }
 
     public void deleteFolder(Long memberId, Long id) {
-        if (!folderRepository.existsByMemberIdAndId(memberId, id)) {
-            throw new BadRequestException("올바르지 않은 요청입니다.");
+        Folder folder = folderRepository.getById(id);
+        folder.validateOwner(memberId);
+        List<Folder> subFolders = folderRepository.findAllByParentFolder(folder);
+        for (Folder subFolder : subFolders) {
+            deleteFolder(memberId, subFolder.getId());
         }
-        folderRepository.deleteById(id);
+        documentService.deleteAllByFolder(folder);
+        folderRepository.delete(folder);
     }
 
     private FolderSaveResult getFolderSaveResult(Folder folder) {
