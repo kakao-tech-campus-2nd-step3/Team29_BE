@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,11 +52,11 @@ class LLMServiceTest {
         List<Integer> pages = List.of(1, 2, 3);
         LLMSubmitCommand command = new LLMSubmitCommand(documentId, pages);
 
-        given(documentRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(documentRepository.getById(anyLong())).willThrow(NotFoundException.class);
 
         // when & then
         assertAll(() -> assertThrows(NotFoundException.class, () -> llmService.submitTask(command)),
-                () -> verify(documentRepository, times(1)).findById(documentId),
+                () -> verify(documentRepository, times(1)).getById(documentId),
                 () -> verify(llmRepository, never()).save(any(LLM.class))
         );
     }
@@ -70,13 +69,13 @@ class LLMServiceTest {
         LLMSubmitCommand command = new LLMSubmitCommand(documentId, pages);
         Document document = mock(Document.class);
 
-        given(documentRepository.findById(anyLong())).willReturn(Optional.of(document));
+        given(documentRepository.getById(anyLong())).willReturn(document);
         given(llmRepository.save(any(LLM.class))).willAnswer(invocation -> invocation.getArgument(0));
         // when
         LLMSubmitResult result = llmService.submitTask(command);
 
         // then
-        assertAll(() -> verify(documentRepository, times(1)).findById(anyLong()),
+        assertAll(() -> verify(documentRepository, times(1)).getById(anyLong()),
                 () -> verify(llmRepository, times(3)).save(any(LLM.class))
         );
     }
