@@ -3,6 +3,7 @@ package notai.member.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,12 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class OauthId {
 
-	@Column(length = 255, nullable = false)
-	private String oauthId;
+    @NotNull
+    @Column(length = 255)
+    private String oauthId;
 
-	@Enumerated(STRING)
-	@Column(length = 20, nullable = false)
-	private OauthProvider oauthProvider;
+    @NotNull
+    @Enumerated(STRING)
+    @Column(length = 20)
+    private OauthProvider oauthProvider;
 }

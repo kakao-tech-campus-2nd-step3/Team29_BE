@@ -15,19 +15,18 @@ import static java.util.stream.Collectors.toMap;
 @Component
 public class OauthClientComposite {
 
-	private final Map<OauthProvider, OauthClient> oauthClients;
+    private final Map<OauthProvider, OauthClient> oauthClients;
 
-	public OauthClientComposite(Set<OauthClient> oauthClients) {
-		this.oauthClients = oauthClients.stream()
-				.collect(toMap(OauthClient::oauthProvider, identity()));
-	}
+    public OauthClientComposite(Set<OauthClient> oauthClients) {
+        this.oauthClients = oauthClients.stream().collect(toMap(OauthClient::oauthProvider, identity()));
+    }
 
-	public Member fetchMember(OauthProvider oauthProvider, String accessToken) {
-		return oauthClients.get(oauthProvider).fetchMember(accessToken);
-	}
+    public Member fetchMember(OauthProvider oauthProvider, String accessToken) {
+        return oauthClients.get(oauthProvider).fetchMember(accessToken);
+    }
 
-	public OauthClient getOauthClient(OauthProvider oauthProvider) {
-		return Optional.ofNullable(oauthClients.get(oauthProvider)).orElseThrow(
-				() -> new BadRequestException("지원하지 않는 소셜 로그인 타입입니다."));
-	}
+    public OauthClient getOauthClient(OauthProvider oauthProvider) {
+        return Optional.ofNullable(oauthClients.get(oauthProvider))
+                       .orElseThrow(() -> new BadRequestException("지원하지 않는 소셜 로그인 타입입니다."));
+    }
 }

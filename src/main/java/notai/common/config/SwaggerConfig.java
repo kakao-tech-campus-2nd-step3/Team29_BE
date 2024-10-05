@@ -22,20 +22,15 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         String jwt = "JWT";
-        SecurityRequirement securityRequirement = new SecurityRequirement()
-                .addList(jwt);
-        Components components = new Components()
-                .addSecuritySchemes(jwt, new SecurityScheme()
-                        .name(jwt)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .description("토큰값을 입력하여 인증을 활성화할 수 있습니다.")
-                        .bearerFormat("JWT")
-                );
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
+        Components components = new Components().addSecuritySchemes(jwt, new SecurityScheme().name(jwt)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .description("토큰값을 입력하여 인증을 활성화할 수 있습니다.")
+                .bearerFormat("JWT"));
         Server server = new Server();
         server.setUrl(serverUrl);
-        return new OpenAPI()
-                .components(new Components())
+        return new OpenAPI().components(new Components())
                 .info(apiInfo())
                 .addSecurityItem(securityRequirement)
                 .components(components)
@@ -43,9 +38,6 @@ public class SwaggerConfig {
     }
 
     private Info apiInfo() {
-        return new Info()
-                .title("notai API")
-                .description("notai API 문서입니다.")
-                .version("0.0.1");
+        return new Info().title("notai API").description("notai API 문서입니다.").version("0.0.1");
     }
 }
