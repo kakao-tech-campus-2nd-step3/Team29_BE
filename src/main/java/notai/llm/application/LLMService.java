@@ -1,6 +1,11 @@
 package notai.llm.application;
 
+import static java.util.stream.Collectors.groupingBy;
 import lombok.RequiredArgsConstructor;
+import notai.annotation.domain.Annotation;
+import notai.annotation.domain.AnnotationRepository;
+import notai.client.ai.AiClient;
+import notai.client.ai.request.LlmTaskRequest;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.llm.application.command.LLMSubmitCommand;
@@ -16,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * SummaryService 와 ExamService 는 엔티티와 관련된 로직만 처리하고
@@ -32,12 +40,24 @@ public class LLMService {
     private final DocumentRepository documentRepository;
     private final SummaryRepository summaryRepository;
     private final ProblemRepository problemRepository;
+    private final AnnotationRepository annotationRepository;
+    private final AiClient aiClient;
 
     public LLMSubmitResult submitTask(LLMSubmitCommand command) {
         Document foundDocument = documentRepository.getById(command.documentId());
+        List<Annotation> annotations = annotationRepository.findByDocumentId(command.documentId());
+
+        Map<Integer, List<Annotation>> annotationsByPage =
+                annotations.stream().collect(groupingBy(Annotation::getPageNumber));
 
         command.pages().forEach(pageNumber -> {
-            UUID taskId = sendRequestToAIServer();
+            String annotationContents = annotationsByPage.getOrDefault(
+                    pageNumber,
+                    List.of()
+            ).stream().map(Annotation::getContent).collect(Collectors.joining(", "));
+
+            // Todo OCR, STT 결과 전달
+            UUID taskId = sendRequestToAIServer("ocrText", "stt", annotationContents);
             Summary summary = new Summary(foundDocument, pageNumber);
             Problem problem = new Problem(foundDocument, pageNumber);
 
@@ -64,10 +84,7 @@ public class LLMService {
         return command.pageNumber();
     }
 
-    /**
-     * 임시 값 반환, 추후 AI 서버에서 작업 단위 UUID 가 반환됨.
-     */
-    private UUID sendRequestToAIServer() {
-        return UUID.randomUUID();
+    private UUID sendRequestToAIServer(String ocrText, String stt, String keyboardNote) {
+        return aiClient.submitLlmTask(LlmTaskRequest.of(ocrText, stt, keyboardNote)).taskId();
     }
 }
