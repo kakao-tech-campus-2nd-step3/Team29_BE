@@ -109,7 +109,6 @@ class LLMServiceTest {
                 () -> verify(llmRepository, times(2)).save(any(LLM.class))
         );
 
-        // Verify that the AI client was called with the correct annotation contents
         verify(aiClient).submitLlmTask(argThat(request -> request.keyboardNote().equals("Annotation 1, Annotation 2")));
         verify(aiClient).submitLlmTask(argThat(request -> request.keyboardNote().equals("Annotation 3")));
     }
