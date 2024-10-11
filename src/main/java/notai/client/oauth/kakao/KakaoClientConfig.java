@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.RestClient;
 
 import static notai.client.HttpInterfaceUtil.createHttpInterface;
+import static notai.common.exception.ErrorMessages.KAKAO_API_ERROR;
 
 @Slf4j
 @Configuration
@@ -19,7 +20,7 @@ public class KakaoClientConfig {
                 (request, response) -> {
                     String responseData = new String(response.getBody().readAllBytes());
                     log.error("카카오톡 API 오류 : {}", responseData);
-                    throw new ExternalApiException(responseData, response.getStatusCode().value());
+                    throw new ExternalApiException(KAKAO_API_ERROR, response.getStatusCode().value());
                 }
         ).build();
         return createHttpInterface(restClient, KakaoClient.class);

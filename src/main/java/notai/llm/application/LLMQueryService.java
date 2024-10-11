@@ -1,6 +1,7 @@
 package notai.llm.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import notai.common.exception.type.InternalServerErrorException;
 import notai.common.exception.type.NotFoundException;
 import notai.document.domain.DocumentRepository;
@@ -19,9 +20,11 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
+import static notai.common.exception.ErrorMessages.*;
 import static notai.llm.domain.TaskStatus.COMPLETED;
 import static notai.llm.domain.TaskStatus.IN_PROGRESS;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LLMQueryService {
@@ -64,7 +67,7 @@ public class LLMQueryService {
 
     private void checkDocumentExists(Long documentId) {
         if (!documentRepository.existsById(documentId)) {
-            throw new NotFoundException("해당 강의자료를 찾을 수 없습니다.");
+            throw new NotFoundException(DOCUMENT_NOT_FOUND);
         }
     }
 
@@ -72,14 +75,15 @@ public class LLMQueryService {
             List<SummaryPageContentResult> summaryResults, List<ProblemPageContentResult> problemResults
     ) {
         if (summaryResults.size() != problemResults.size()) {
-            throw new InternalServerErrorException("AI 요약 및 문제 생성 중에 문제가 발생했습니다."); // 요약 개수와 문제 개수가 불일치
+            log.error("요약 개수와 문제 개수가 일치하지 않습니다. 요약: {} 개, 문제: {} 개", summaryResults.size(), problemResults.size());
+            throw new InternalServerErrorException(LLM_TASK_RESULT_ERROR);
         }
     }
 
     private List<Long> getSummaryIds(Long documentId) {
         List<Long> summaryIds = summaryQueryRepository.getSummaryIdsByDocumentId(documentId);
         if (summaryIds.isEmpty()) {
-            throw new NotFoundException("AI 기능을 요청한 기록이 없습니다.");
+            throw new NotFoundException(LLM_TASK_LOG_NOT_FOUND);
         }
         return summaryIds;
     }
@@ -92,7 +96,7 @@ public class LLMQueryService {
         List<SummaryPageContentResult> summaryResults = summaryQueryRepository.getPageNumbersAndContentByDocumentId(
                 documentId);
         if (summaryResults.isEmpty()) {
-            throw new NotFoundException("AI 기능을 요청한 기록이 없습니다.");
+            throw new NotFoundException(LLM_TASK_LOG_NOT_FOUND);
         }
         return summaryResults;
     }
@@ -106,6 +110,9 @@ public class LLMQueryService {
                       .filter(result -> result.pageNumber() == pageNumber)
                       .findFirst()
                       .map(ProblemPageContentResult::content)
-                      .orElseThrow(() -> new InternalServerErrorException("AI 요약 및 문제 생성 중에 문제가 발생했습니다.")); // 요약 페이지와 문제 페이지가 불일치
+                      .orElseThrow(() -> {
+                          log.error("{} 페이지에 대한 문제 생성 결과가 없습니다.", pageNumber);
+                          return new InternalServerErrorException(LLM_TASK_RESULT_ERROR);
+                      });
     }
 }

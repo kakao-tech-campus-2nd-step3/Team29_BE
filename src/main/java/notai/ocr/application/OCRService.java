@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+import static notai.common.exception.ErrorMessages.OCR_TASK_ERROR;
+
 @Service
 @RequiredArgsConstructor
 public class OCRService {
@@ -44,7 +46,7 @@ public class OCRService {
 
             pdDocument.close();
         } catch (Exception e) {
-            throw new FileProcessException("PDF 파일을 통해 OCR 작업을 수행하는데 실패했습니다.");
+            throw new FileProcessException(OCR_TASK_ERROR);
         }
     }
 }
