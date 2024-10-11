@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static notai.common.exception.ErrorMessages.ANNOTATION_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class AnnotationQueryService {
@@ -25,7 +27,7 @@ public class AnnotationQueryService {
 
         List<Annotation> annotations = annotationRepository.findByDocumentIdAndPageNumberIn(documentId, pageNumbers);
         if (annotations.isEmpty()) {
-            throw new NotFoundException("해당 문서에 해당 페이지 번호의 주석이 존재하지 않습니다.");
+            throw new NotFoundException(ANNOTATION_NOT_FOUND);
         }
 
         return annotations.stream()

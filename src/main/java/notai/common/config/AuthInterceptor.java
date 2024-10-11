@@ -3,9 +3,10 @@ package notai.common.config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import notai.auth.TokenService;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {

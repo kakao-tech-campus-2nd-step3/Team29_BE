@@ -28,6 +28,9 @@ public class DocumentController {
     private final DocumentService documentService;
     private final DocumentQueryService documentQueryService;
 
+    private static final Long ROOT_FOLDER_ID = -1L;
+    private static final String FOLDER_URL_FORMAT = "/api/folders/%s/documents/%s";
+
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<DocumentSaveResponse> saveDocument(
             @PathVariable Long folderId,
@@ -35,13 +38,13 @@ public class DocumentController {
             @RequestPart DocumentSaveRequest documentSaveRequest
     ) {
         DocumentSaveResult documentSaveResult;
-        if (folderId.equals(-1L)) {
+        if (folderId.equals(ROOT_FOLDER_ID)) {
             documentSaveResult = documentService.saveRootDocument(pdfFile, documentSaveRequest);
         } else {
             documentSaveResult = documentService.saveDocument(folderId, pdfFile, documentSaveRequest);
         }
         DocumentSaveResponse response = DocumentSaveResponse.from(documentSaveResult);
-        String url = String.format("/api/folders/%s/documents/%s", folderId, response.id());
+        String url = String.format(FOLDER_URL_FORMAT, folderId, response.id());
         return ResponseEntity.created(URI.create(url)).body(response);
     }
 
