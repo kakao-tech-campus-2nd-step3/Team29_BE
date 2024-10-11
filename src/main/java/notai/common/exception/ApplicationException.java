@@ -7,8 +7,8 @@ public class ApplicationException extends RuntimeException {
 
     private final int code;
 
-    public ApplicationException(String message, int code) {
-        super(message);
+    public ApplicationException(ErrorMessages message, int code) {
+        super(message.getMessage());
         this.code = code;
     }
 }

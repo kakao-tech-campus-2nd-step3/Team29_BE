@@ -10,6 +10,8 @@ import notai.recording.domain.RecordingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static notai.common.exception.ErrorMessages.RECORDING_NOT_FOUND;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class PageRecordingService {
 
     private static void checkDocumentOwnershipOfRecording(PageRecordingSaveCommand command, Recording foundRecording) {
         if (!foundRecording.isRecordingOwnedByDocument(command.documentId())) {
-            throw new NotFoundException("해당 녹음 파일을 찾을 수 없습니다.");
+            throw new NotFoundException(RECORDING_NOT_FOUND);
         }
     }
 }
