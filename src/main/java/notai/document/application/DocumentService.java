@@ -9,6 +9,9 @@ import notai.document.presentation.request.DocumentSaveRequest;
 import notai.document.presentation.request.DocumentUpdateRequest;
 import notai.folder.domain.Folder;
 import notai.folder.domain.FolderRepository;
+import notai.ocr.application.OCRService;
+import notai.pdf.PdfService;
+import notai.pdf.result.PdfSaveResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,28 +20,26 @@ import org.springframework.web.multipart.MultipartFile;
 public class DocumentService {
 
     private final PdfService pdfService;
+    private final OCRService ocrService;
     private final DocumentRepository documentRepository;
     private final FolderRepository folderRepository;
 
     public DocumentSaveResult saveDocument(
             Long folderId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
-        String pdfName = pdfService.savePdf(pdfFile);
-        String pdfUrl = convertPdfUrl(pdfName);
-        Folder folder = folderRepository.getById(folderId);
-        Document document = new Document(folder, documentSaveRequest.name(), pdfUrl);
-        Document savedDocument = documentRepository.save(document);
-        return DocumentSaveResult.of(savedDocument.getId(), savedDocument.getName(), savedDocument.getUrl());
+        PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
+        Document document = saveAndReturnDocument(folderId, documentSaveRequest, pdfSaveResult.pdfUrl());
+        ocrService.saveOCR(document, pdfSaveResult.pdf());
+        return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
 
     public DocumentSaveResult saveRootDocument(
             MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
-        String pdfName = pdfService.savePdf(pdfFile);
-        String pdfUrl = convertPdfUrl(pdfName);
-        Document document = new Document(documentSaveRequest.name(), pdfUrl);
-        Document savedDocument = documentRepository.save(document);
-        return DocumentSaveResult.of(savedDocument.getId(), savedDocument.getName(), savedDocument.getUrl());
+        PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
+        Document document = saveAndReturnRootDocument(documentSaveRequest, pdfSaveResult.pdfUrl());
+        ocrService.saveOCR(document, pdfSaveResult.pdf());
+        return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
 
     public DocumentUpdateResult updateDocument(
@@ -65,7 +66,14 @@ public class DocumentService {
         documentRepository.deleteAllByFolder(folder);
     }
 
-    private String convertPdfUrl(String pdfName) {
-        return String.format("pdf/%s", pdfName);
+    private Document saveAndReturnDocument(Long folderId, DocumentSaveRequest documentSaveRequest, String pdfUrl) {
+        Folder folder = folderRepository.getById(folderId);
+        Document document = new Document(folder, documentSaveRequest.name(), pdfUrl);
+        return documentRepository.save(document);
+    }
+
+    private Document saveAndReturnRootDocument(DocumentSaveRequest documentSaveRequest, String pdfUrl) {
+        Document document = new Document(documentSaveRequest.name(), pdfUrl);
+        return documentRepository.save(document);
     }
 }

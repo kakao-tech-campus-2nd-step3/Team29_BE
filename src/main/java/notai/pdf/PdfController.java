@@ -1,7 +1,6 @@
-package notai.document.presentation;
+package notai.pdf;
 
 import lombok.RequiredArgsConstructor;
-import notai.document.application.PdfService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
