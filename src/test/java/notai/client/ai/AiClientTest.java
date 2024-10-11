@@ -5,7 +5,6 @@ import notai.client.ai.response.TaskResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
@@ -16,10 +15,7 @@ import java.util.UUID;
 class AiClientTest {
 
     @Mock
-    private AiClient mockAiClient;
-
-    @InjectMocks
-    private AiClientImpl aiClientImpl;
+    private AiClient aiClient;
 
     @BeforeEach
     void setUp() {
@@ -32,29 +28,29 @@ class AiClientTest {
         LlmTaskRequest request = LlmTaskRequest.of("OCR 텍스트", "STT 텍스트", "키보드 노트");
         UUID expectedTaskId = UUID.randomUUID();
         TaskResponse expectedResponse = new TaskResponse(expectedTaskId, "llm");
-        when(mockAiClient.submitLlmTask(request)).thenReturn(expectedResponse);
+        when(aiClient.submitLlmTask(request)).thenReturn(expectedResponse);
 
         // When
-        TaskResponse response = aiClientImpl.submitLlmTask(request);
+        TaskResponse response = aiClient.submitLlmTask(request);
 
         // Then
         assertEquals(expectedResponse, response);
-        verify(mockAiClient, times(1)).submitLlmTask(request);
+        verify(aiClient, times(1)).submitLlmTask(request);
     }
 
     @Test
-    void testSubmitSttTask() {
+    void STT_테스크_전달_테스트() {
         // Given
         MultipartFile mockAudioFile = mock(MultipartFile.class);
         UUID expectedTaskId = UUID.randomUUID();
         TaskResponse expectedResponse = new TaskResponse(expectedTaskId, "stt");
-        when(mockAiClient.submitSttTask(mockAudioFile)).thenReturn(expectedResponse);
+        when(aiClient.submitSttTask(mockAudioFile)).thenReturn(expectedResponse);
 
         // When
-        TaskResponse response = aiClientImpl.submitSttTask(mockAudioFile);
+        TaskResponse response = aiClient.submitSttTask(mockAudioFile);
 
         // Then
         assertEquals(expectedResponse, response);
-        verify(mockAiClient, times(1)).submitSttTask(mockAudioFile);
+        verify(aiClient, times(1)).submitSttTask(mockAudioFile);
     }
 }
