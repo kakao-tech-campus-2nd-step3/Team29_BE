@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+import static notai.common.exception.ErrorMessages.*;
+
 @Component
 public class TokenService {
     private static final String MEMBER_ID_CLAIM = "memberId";
@@ -57,9 +59,9 @@ public class TokenService {
         try {
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(refreshToken);
         } catch (ExpiredJwtException e) {
-            throw new UnAuthorizedException("만료된 Refresh Token입니다.");
+            throw new UnAuthorizedException(EXPIRED_REFRESH_TOKEN);
         } catch (Exception e) {
-            throw new UnAuthorizedException("유효하지 않은 Refresh Token입니다.");
+            throw new UnAuthorizedException(INVALID_REFRESH_TOKEN);
         }
         Member member = memberRepository.getByRefreshToken(refreshToken);
 
@@ -72,7 +74,7 @@ public class TokenService {
                     Long.class
             );
         } catch (Exception e) {
-            throw new UnAuthorizedException("유효하지 않은 토큰입니다.");
+            throw new UnAuthorizedException(INVALID_ACCESS_TOKEN);
         }
     }
 }

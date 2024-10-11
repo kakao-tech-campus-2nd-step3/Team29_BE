@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static notai.common.exception.ErrorMessages.INVALID_LOGIN_TYPE;
 
 @Component
 public class OauthClientComposite {
@@ -27,6 +28,6 @@ public class OauthClientComposite {
 
     public OauthClient getOauthClient(OauthProvider oauthProvider) {
         return Optional.ofNullable(oauthClients.get(oauthProvider))
-                       .orElseThrow(() -> new BadRequestException("지원하지 않는 소셜 로그인 타입입니다."));
+                       .orElseThrow(() -> new BadRequestException(INVALID_LOGIN_TYPE));
     }
 }
