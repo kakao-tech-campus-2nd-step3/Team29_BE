@@ -37,6 +37,7 @@ server:
       force: true
 
 server-url: http://localhost:8080
+ai-server-url: http://localhost:5000 # 실제 AI 서버주소는 prod에서만 사용
 
 token: # todo production에서 secretKey 변경
   secretKey: "ZGQrT0tuZHZkRWRxeXJCamRYMDFKMnBaR2w5WXlyQm9HU2RqZHNha1gycFlkMWpLc0dObw=="

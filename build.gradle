@@ -64,3 +64,9 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+test {
+    useJUnitPlatform {
+        excludeTags 'exclude-test'
+    }
+}

@@ -17,4 +17,8 @@ public interface AnnotationRepository extends JpaRepository<Annotation, Long> {
         return findById(annotationId)
                 .orElseThrow(() -> new NotFoundException("주석을 찾을 수 없습니다. ID: " + annotationId));
     }
+
+    List<Annotation> findByDocumentIdAndPageNumber(Long documentId, Integer pageNumber);
+
+    List<Annotation> findByDocumentId(Long documentId);
 }
