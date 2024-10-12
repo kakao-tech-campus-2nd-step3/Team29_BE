@@ -1,15 +1,19 @@
 package notai.document.domain;
 
 import jakarta.persistence.*;
-import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
-import static lombok.AccessLevel.PROTECTED;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import notai.common.domain.RootEntity;
 import notai.common.exception.type.NotFoundException;
 import notai.folder.domain.Folder;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+import static notai.common.exception.ErrorMessages.DOCUMENT_NOT_FOUND;
+
+@Slf4j
 @Entity
 @Table(name = "document")
 @Getter
@@ -45,7 +49,8 @@ public class Document extends RootEntity<Long> {
 
     public void validateDocument(Long folderId) {
         if (!this.folder.getId().equals(folderId)) {
-            throw new NotFoundException("해당 폴더 내에 존재하지 않는 자료입니다.");
+            log.info("요청 폴더와 실제 문서를 소유한 폴더가 다릅니다.");
+            throw new NotFoundException(DOCUMENT_NOT_FOUND);
         }
     }
 

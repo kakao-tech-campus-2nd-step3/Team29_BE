@@ -2,10 +2,11 @@ package notai.common.exception.type;
 
 
 import notai.common.exception.ApplicationException;
+import notai.common.exception.ErrorMessages;
 
 public class ExternalApiException extends ApplicationException {
 
-    public ExternalApiException(String message, int code) {
-        super("외부 API 호출 시 예외 발생: " + message, code);
+    public ExternalApiException(ErrorMessages message, int code) {
+        super(message, code);
     }
 }
