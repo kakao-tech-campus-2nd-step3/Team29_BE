@@ -4,4 +4,4 @@ spring:
 
 file:
   audio:
-    basePath: src/main/resources/audio/
+    basePath: /app/audio/  # Docker 볼륨에 맞게 경로 수정
