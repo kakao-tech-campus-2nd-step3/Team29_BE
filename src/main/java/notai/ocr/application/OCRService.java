@@ -28,11 +28,14 @@ public class OCRService {
             Document document, File pdfFile
     ) {
         try {
-            System.setProperty("jna.library.path", "/usr/local/opt/tesseract/lib/");
+            // System.setProperty("jna.library.path", "/usr/local/opt/tesseract/lib/");
+            System.setProperty("jna.library.path", "C:\\Program Files\\Tesseract-OCR");
+
             //window, mac -> brew install tesseract, tesseract-lang
             Tesseract tesseract = new Tesseract();
 
-            tesseract.setDatapath("/usr/local/share/tessdata");
+            // tesseract.setDatapath("/usr/local/share/tessdata");
+            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
             tesseract.setLanguage("kor+eng");
 
             PDDocument pdDocument = Loader.loadPDF(pdfFile);
