@@ -16,7 +16,7 @@ public class KakaoOauthClient implements OauthClient {
 
     @Override
     public Member fetchMember(String accessToken) {
-        return kakaoClient.fetchMember(accessToken).toDomain();
+        return kakaoClient.fetchMember("Bearer " + accessToken).toDomain();
     }
 
     @Override

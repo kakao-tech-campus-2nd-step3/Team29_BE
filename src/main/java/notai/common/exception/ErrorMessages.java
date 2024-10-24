@@ -43,6 +43,7 @@ public enum ErrorMessages {
     INVALID_REFRESH_TOKEN("유요하지 않은 Refresh Token입니다."),
     EXPIRED_REFRESH_TOKEN("만료된 Refresh Token입니다."),
     INVALID_LOGIN_TYPE("지원하지 않는 소셜 로그인 타입입니다."),
+    NOTFOUND_ACCESS_TOKEN("토큰 정보가 존재하지 않습니다."),
 
     // json conversion
     JSON_CONVERSION_ERROR("JSON-객체 변환 중에 오류가 발생했습니다."),
