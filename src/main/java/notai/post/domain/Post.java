@@ -1,21 +1,21 @@
 package notai.post.domain;
 
 import jakarta.persistence.*;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
+import static lombok.AccessLevel.PROTECTED;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import notai.common.domain.RootEntity;
 import notai.member.domain.Member;
-
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Entity
-public class Post {
+public class Post extends RootEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

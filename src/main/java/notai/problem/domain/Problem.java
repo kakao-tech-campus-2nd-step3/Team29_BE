@@ -14,6 +14,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "document_id", "page_number" }) })
 public class Problem extends RootEntity<Long> {
 
     @Id
