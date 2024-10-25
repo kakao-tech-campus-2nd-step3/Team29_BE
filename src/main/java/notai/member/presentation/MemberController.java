@@ -14,6 +14,7 @@ import notai.member.presentation.request.TokenRefreshRequest;
 import notai.member.presentation.response.MemberFindResponse;
 import notai.member.presentation.response.MemberOauthLoginResponse;
 import notai.member.presentation.response.MemberTokenRefreshResponse;
+import static org.springframework.http.HttpStatus.CREATED;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class MemberController {
         Member member = oauthClient.fetchMember(oauthProvider, request.oauthAccessToken());
         Long memberId = memberService.login(member);
         TokenPair tokenPair = tokenService.createTokenPair(memberId);
-        return ResponseEntity.ok(MemberOauthLoginResponse.from(tokenPair));
+        return ResponseEntity.status(CREATED).body(MemberOauthLoginResponse.from(tokenPair));
     }
 
     @PostMapping("/token/refresh")
@@ -42,7 +43,7 @@ public class MemberController {
             @RequestBody TokenRefreshRequest request
     ) {
         TokenPair tokenPair = tokenService.refreshTokenPair(request.refreshToken());
-        return ResponseEntity.ok(MemberTokenRefreshResponse.from(tokenPair));
+        return ResponseEntity.status(CREATED).body(MemberTokenRefreshResponse.from(tokenPair));
     }
 
     @GetMapping("/me")
