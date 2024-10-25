@@ -2,6 +2,7 @@ package notai.ocr.application;
 
 import lombok.RequiredArgsConstructor;
 import net.sourceforge.tess4j.Tesseract;
+import static notai.common.exception.ErrorMessages.OCR_TASK_ERROR;
 import notai.common.exception.type.FileProcessException;
 import notai.document.domain.Document;
 import notai.ocr.domain.OCR;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-
-import static notai.common.exception.ErrorMessages.OCR_TASK_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -51,5 +50,9 @@ public class OCRService {
         } catch (Exception e) {
             throw new FileProcessException(OCR_TASK_ERROR);
         }
+    }
+
+    public void deleteAllByDocument(Document document) {
+        ocrRepository.deleteAllByDocument(document);
     }
 }

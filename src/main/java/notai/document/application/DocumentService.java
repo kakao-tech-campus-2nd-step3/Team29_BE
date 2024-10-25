@@ -15,6 +15,8 @@ import notai.pdf.result.PdfSaveResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
@@ -28,7 +30,7 @@ public class DocumentService {
             Long folderId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
         PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
-        Document document = saveAndReturnDocument(folderId, documentSaveRequest, pdfSaveResult.pdfUrl());
+        Document document = saveAndReturnDocument(folderId, documentSaveRequest, pdfSaveResult);
         ocrService.saveOCR(document, pdfSaveResult.pdf());
         return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
@@ -37,7 +39,7 @@ public class DocumentService {
             MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
         PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
-        Document document = saveAndReturnRootDocument(documentSaveRequest, pdfSaveResult.pdfUrl());
+        Document document = saveAndReturnRootDocument(documentSaveRequest, pdfSaveResult);
         ocrService.saveOCR(document, pdfSaveResult.pdf());
         return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
@@ -57,23 +59,36 @@ public class DocumentService {
     ) {
         Document document = documentRepository.getById(documentId);
         document.validateDocument(folderId);
+        ocrService.deleteAllByDocument(document);
         documentRepository.delete(document);
     }
 
     public void deleteAllByFolder(
             Folder folder
     ) {
-        documentRepository.deleteAllByFolder(folder);
+        List<Document> documents = documentRepository.findAllByFolderId(folder.getId());
+        for (Document document : documents) {
+            deleteDocument(folder.getId(), document.getId());
+        }
     }
 
-    private Document saveAndReturnDocument(Long folderId, DocumentSaveRequest documentSaveRequest, String pdfUrl) {
+    private Document saveAndReturnDocument(
+            Long folderId, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
+    ) {
         Folder folder = folderRepository.getById(folderId);
-        Document document = new Document(folder, documentSaveRequest.name(), pdfUrl);
+        Document document = new Document(folder,
+                documentSaveRequest.name(),
+                pdfSaveResult.pdfUrl(),
+                pdfSaveResult.totalPages()
+        );
         return documentRepository.save(document);
     }
 
-    private Document saveAndReturnRootDocument(DocumentSaveRequest documentSaveRequest, String pdfUrl) {
-        Document document = new Document(documentSaveRequest.name(), pdfUrl);
+    private Document saveAndReturnRootDocument(DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult) {
+        Document document = new Document(documentSaveRequest.name(),
+                pdfSaveResult.pdfUrl(),
+                pdfSaveResult.totalPages()
+        );
         return documentRepository.save(document);
     }
 }

@@ -11,16 +11,14 @@ import notai.document.presentation.request.DocumentUpdateRequest;
 import notai.document.presentation.response.DocumentFindResponse;
 import notai.document.presentation.response.DocumentSaveResponse;
 import notai.document.presentation.response.DocumentUpdateResponse;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/folders/{folderId}/documents")
 @RequiredArgsConstructor
 public class DocumentController {
@@ -31,7 +29,7 @@ public class DocumentController {
     private static final Long ROOT_FOLDER_ID = -1L;
     private static final String FOLDER_URL_FORMAT = "/api/folders/%s/documents/%s";
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping
     public ResponseEntity<DocumentSaveResponse> saveDocument(
             @PathVariable Long folderId,
             @RequestPart MultipartFile pdfFile,

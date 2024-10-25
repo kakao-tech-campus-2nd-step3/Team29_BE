@@ -84,7 +84,7 @@ class LLMServiceTest {
 
         Member member = new Member(new OauthId("12345", OauthProvider.KAKAO), "test@example.com", "TestUser");
         Folder folder = new Folder(member, "TestFolder");
-        Document document = new Document(folder, "TestDocument", "http://example.com/test.pdf");
+        Document document = new Document(folder, "TestDocument", "http://example.com/test.pdf", 43);
 
         List<Annotation> annotations = List.of(new Annotation(document, 1, 10, 20, 100, 50, "Annotation 1"),
                 new Annotation(document, 1, 30, 40, 80, 60, "Annotation 2"),

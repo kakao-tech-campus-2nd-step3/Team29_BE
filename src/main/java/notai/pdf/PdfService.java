@@ -1,9 +1,14 @@
 package notai.pdf;
 
 import lombok.RequiredArgsConstructor;
+import notai.common.exception.ErrorMessages;
+import static notai.common.exception.ErrorMessages.FILE_NOT_FOUND;
+import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
 import notai.common.exception.type.FileProcessException;
 import notai.common.exception.type.NotFoundException;
 import notai.pdf.result.PdfSaveResult;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,9 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
-
-import static notai.common.exception.ErrorMessages.FILE_NOT_FOUND;
-import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +34,10 @@ public class PdfService {
 
             String fileName = UUID.randomUUID() + ".pdf";
             Path filePath = directoryPath.resolve(fileName);
-            file.transferTo(filePath.toFile());
-
-            return PdfSaveResult.of(fileName, filePath.toFile());
+            File pdfFile = filePath.toFile();
+            file.transferTo(pdfFile);
+            Integer totalPages = getTotalPages(pdfFile);
+            return PdfSaveResult.of(fileName, pdfFile, totalPages);
         } catch (IOException exception) {
             throw new FileProcessException(FILE_SAVE_ERROR);
         }
@@ -47,5 +50,16 @@ public class PdfService {
             throw new NotFoundException(FILE_NOT_FOUND);
         }
         return filePath.toFile();
+    }
+
+    private Integer getTotalPages(File file) {
+        try {
+            PDDocument document = Loader.loadPDF(file);
+            Integer totalPages = document.getNumberOfPages();
+            document.close();
+            return totalPages;
+        } catch (IOException e) {
+            throw new FileProcessException(ErrorMessages.INVALID_FILE_TYPE);
+        }
     }
 }
