@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import notai.document.application.DocumentService;
 import notai.folder.application.result.FolderMoveResult;
 import notai.folder.application.result.FolderSaveResult;
+import notai.folder.application.result.FolderUpdateResult;
 import notai.folder.domain.Folder;
 import notai.folder.domain.FolderRepository;
 import notai.folder.presentation.request.FolderMoveRequest;
 import notai.folder.presentation.request.FolderSaveRequest;
+import notai.folder.presentation.request.FolderUpdateRequest;
 import notai.member.domain.Member;
 import notai.member.domain.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,14 @@ public class FolderService {
         return getFolderMoveResult(folder);
     }
 
+    public FolderUpdateResult updateFolder(Long memberId, Long id, FolderUpdateRequest folderUpdateRequest) {
+        Folder folder = folderRepository.getById(id);
+        folder.validateOwner(memberId);
+        folder.updateName(folderUpdateRequest.name());
+        folderRepository.save(folder);
+        return getFolderUpdateResult(folder);
+    }
+
     public void deleteFolder(Long memberId, Long id) {
         Folder folder = folderRepository.getById(id);
         folder.validateOwner(memberId);
@@ -72,5 +82,10 @@ public class FolderService {
 
     private FolderMoveResult getFolderMoveResult(Folder folder) {
         return FolderMoveResult.of(folder.getId(), folder.getName());
+    }
+
+    private FolderUpdateResult getFolderUpdateResult(Folder folder) {
+        Long parentFolderId = folder.getParentFolder() != null ? folder.getParentFolder().getId() : null;
+        return FolderUpdateResult.of(folder.getId(), parentFolderId, folder.getName());
     }
 }

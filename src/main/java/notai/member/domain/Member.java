@@ -32,7 +32,6 @@ public class Member extends RootEntity<Long> {
     @Column(length = 20)
     private String nickname;
 
-    @NotNull
     @Column(length = 255)
     private String refreshToken;
 

@@ -1,17 +1,16 @@
 package notai.folder.domain;
 
 import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.IDENTITY;
 import jakarta.validation.constraints.NotNull;
+import static lombok.AccessLevel.PROTECTED;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import notai.common.domain.RootEntity;
+import static notai.common.exception.ErrorMessages.FOLDER_NOT_FOUND;
 import notai.common.exception.type.NotFoundException;
 import notai.member.domain.Member;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
-import static notai.common.exception.ErrorMessages.FOLDER_NOT_FOUND;
 
 @Slf4j
 @Entity
@@ -50,6 +49,10 @@ public class Folder extends RootEntity<Long> {
 
     public void moveRootFolder() {
         this.parentFolder = null;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
     }
 
     public void moveNewParentFolder(Folder parentFolder) {

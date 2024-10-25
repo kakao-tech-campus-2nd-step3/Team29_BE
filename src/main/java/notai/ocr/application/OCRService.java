@@ -2,6 +2,7 @@ package notai.ocr.application;
 
 import lombok.RequiredArgsConstructor;
 import net.sourceforge.tess4j.Tesseract;
+import static notai.common.exception.ErrorMessages.OCR_TASK_ERROR;
 import notai.common.exception.type.FileProcessException;
 import notai.document.domain.Document;
 import notai.ocr.domain.OCR;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Service;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-import static notai.common.exception.ErrorMessages.OCR_TASK_ERROR;
-
 @Service
 @RequiredArgsConstructor
 public class OCRService {
@@ -28,11 +27,14 @@ public class OCRService {
             Document document, File pdfFile
     ) {
         try {
-            System.setProperty("jna.library.path", "/usr/local/opt/tesseract/lib/");
+            // System.setProperty("jna.library.path", "/usr/local/opt/tesseract/lib/");
+            System.setProperty("jna.library.path", "C:\\Program Files\\Tesseract-OCR");
+
             //window, mac -> brew install tesseract, tesseract-lang
             Tesseract tesseract = new Tesseract();
 
-            tesseract.setDatapath("/usr/local/share/tessdata");
+            // tesseract.setDatapath("/usr/local/share/tessdata");
+            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
             tesseract.setLanguage("kor+eng");
 
             PDDocument pdDocument = Loader.loadPDF(pdfFile);
@@ -48,5 +50,9 @@ public class OCRService {
         } catch (Exception e) {
             throw new FileProcessException(OCR_TASK_ERROR);
         }
+    }
+
+    public void deleteAllByDocument(Document document) {
+        ocrRepository.deleteAllByDocument(document);
     }
 }
