@@ -2,13 +2,13 @@ package notai.llm.application.result;
 
 import java.util.List;
 
-public record LLMResultsResult(
+public record LLMAllPagesResult(
         Long documentId,
         Integer totalPages,
         List<LLMResult> results
 ) {
-    public static LLMResultsResult of(Long documentId, List<LLMResult> results) {
-        return new LLMResultsResult(documentId, results.size(), results);
+    public static LLMAllPagesResult of(Long documentId, List<LLMResult> results) {
+        return new LLMAllPagesResult(documentId, results.size(), results);
     }
 
     public record LLMResult(

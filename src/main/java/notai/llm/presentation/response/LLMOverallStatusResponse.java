@@ -1,16 +1,16 @@
 package notai.llm.presentation.response;
 
-import notai.llm.application.result.LLMStatusResult;
+import notai.llm.application.result.LLMOverallStatusResult;
 import notai.llm.domain.TaskStatus;
 
-public record LLMStatusResponse(
+public record LLMOverallStatusResponse(
         Long documentId,
         TaskStatus overallStatus,
         Integer totalPages,
         Integer completedPages
 ) {
-    public static LLMStatusResponse from(LLMStatusResult result) {
-        return new LLMStatusResponse(
+    public static LLMOverallStatusResponse from(LLMOverallStatusResult result) {
+        return new LLMOverallStatusResponse(
                 result.documentId(),
                 result.overallStatus(),
                 result.totalPages(),

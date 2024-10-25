@@ -1,18 +1,17 @@
 package notai.llm.presentation.response;
 
-import notai.llm.application.result.LLMResultsResult;
-import notai.llm.application.result.LLMResultsResult.LLMContent;
-import notai.llm.application.result.LLMResultsResult.LLMResult;
-
 import java.util.List;
+import notai.llm.application.result.LLMAllPagesResult;
+import notai.llm.application.result.LLMAllPagesResult.LLMContent;
+import notai.llm.application.result.LLMAllPagesResult.LLMResult;
 
-public record LLMResultsResponse(
+public record LLMAllPagesResultResponse(
         Long documentId,
         Integer totalPages,
         List<Result> results
 ) {
-    public static LLMResultsResponse from(LLMResultsResult result) {
-        return new LLMResultsResponse(
+    public static LLMAllPagesResultResponse from(LLMAllPagesResult result) {
+        return new LLMAllPagesResultResponse(
                 result.documentId(),
                 result.results().size(),
                 result.results().stream().map(Result::from).toList()

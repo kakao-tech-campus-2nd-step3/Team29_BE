@@ -1,41 +1,11 @@
 package notai.problem.query;
 
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import notai.problem.domain.QProblem;
-import notai.problem.query.result.ProblemPageContentResult;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
+import notai.problem.query.result.ProblemPageContentResult;
 
-@Repository
-@RequiredArgsConstructor
-public class ProblemQueryRepository {
+public interface ProblemQueryRepository {
 
-    private final JPAQueryFactory queryFactory;
+    List<ProblemPageContentResult> getPageNumbersAndContentByDocumentId(Long documentId);
 
-    public List<Long> getProblemIdsByDocumentId(Long documentId) {
-        QProblem problem = QProblem.problem;
-
-        return queryFactory
-                .select(problem.id)
-                .from(problem)
-                .where(problem.document.id.eq(documentId))
-                .fetch();
-    }
-
-    public List<ProblemPageContentResult> getPageNumbersAndContentByDocumentId(Long documentId) {
-        QProblem problem = QProblem.problem;
-
-        return queryFactory
-                .select(Projections.constructor(
-                        ProblemPageContentResult.class,
-                        problem.pageNumber,
-                        problem.content
-                ))
-                .from(problem)
-                .where(problem.document.id.eq(documentId).and(problem.content.isNotNull()))
-                .fetch();
-    }
+    String getProblemContentByDocumentIdAndPageNumber(Long documentId, Integer pageNumber);
 }
