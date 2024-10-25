@@ -9,11 +9,11 @@ import notai.common.exception.type.NotFoundException;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.folder.domain.Folder;
-import notai.llm.application.command.LLMSubmitCommand;
+import notai.llm.application.command.LlmTaskSubmitCommand;
 import notai.llm.application.command.SummaryAndProblemUpdateCommand;
-import notai.llm.application.result.LLMSubmitResult;
-import notai.llm.domain.LLM;
-import notai.llm.domain.LLMRepository;
+import notai.llm.application.result.LlmTaskSubmitResult;
+import notai.llm.domain.LlmTask;
+import notai.llm.domain.LlmTaskRepository;
 import notai.member.domain.Member;
 import notai.member.domain.OauthId;
 import notai.member.domain.OauthProvider;
@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-class LLMServiceTest {
+class LlmTaskServiceTest {
 
     @InjectMocks
-    private LLMService llmService;
+    private LlmTaskService llmTaskService;
 
     @Mock
-    private LLMRepository llmRepository;
+    private LlmTaskRepository llmTaskRepository;
 
     @Mock
     private DocumentRepository documentRepository;
@@ -64,14 +64,14 @@ class LLMServiceTest {
         // given
         Long documentId = 1L;
         List<Integer> pages = List.of(1, 2, 3);
-        LLMSubmitCommand command = new LLMSubmitCommand(documentId, pages);
+        LlmTaskSubmitCommand command = new LlmTaskSubmitCommand(documentId, pages);
 
         given(documentRepository.getById(anyLong())).willThrow(NotFoundException.class);
 
         // when & then
-        assertAll(() -> assertThrows(NotFoundException.class, () -> llmService.submitTasks(command)),
+        assertAll(() -> assertThrows(NotFoundException.class, () -> llmTaskService.submitTasks(command)),
                 () -> verify(documentRepository, times(1)).getById(documentId),
-                () -> verify(llmRepository, never()).save(any(LLM.class))
+                () -> verify(llmTaskRepository, never()).save(any(LlmTask.class))
         );
     }
 
@@ -80,7 +80,7 @@ class LLMServiceTest {
         // given
         Long documentId = 1L;
         List<Integer> pages = List.of(1, 2);
-        LLMSubmitCommand command = new LLMSubmitCommand(documentId, pages);
+        LlmTaskSubmitCommand command = new LlmTaskSubmitCommand(documentId, pages);
 
         Member member = new Member(new OauthId("12345", OauthProvider.KAKAO), "test@example.com", "TestUser");
         Folder folder = new Folder(member, "TestFolder");
@@ -97,16 +97,16 @@ class LLMServiceTest {
         given(documentRepository.getById(anyLong())).willReturn(document);
         given(annotationRepository.findByDocumentId(anyLong())).willReturn(annotations);
         given(aiClient.submitLlmTask(any(LlmTaskRequest.class))).willReturn(taskResponse);
-        given(llmRepository.save(any(LLM.class))).willAnswer(invocation -> invocation.getArgument(0));
+        given(llmTaskRepository.save(any(LlmTask.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        LLMSubmitResult result = llmService.submitTasks(command);
+        LlmTaskSubmitResult result = llmTaskService.submitTasks(command);
 
         // then
         assertAll(() -> verify(documentRepository, times(1)).getById(documentId),
                 () -> verify(annotationRepository, times(1)).findByDocumentId(documentId),
                 () -> verify(aiClient, times(2)).submitLlmTask(any(LlmTaskRequest.class)),
-                () -> verify(llmRepository, times(2)).save(any(LLM.class))
+                () -> verify(llmTaskRepository, times(2)).save(any(LlmTask.class))
         );
 
         verify(aiClient).submitLlmTask(argThat(request -> request.keyboardNote().equals("Annotation 1, Annotation 2")));
@@ -123,7 +123,7 @@ class LLMServiceTest {
         String problemContent = "문제 내용";
         Integer pageNumber = 5;
 
-        LLM taskRecord = mock(LLM.class);
+        LlmTask taskRecord = mock(LlmTask.class);
         Summary summary = mock(Summary.class);
         Problem problem = mock(Problem.class);
 
@@ -132,7 +132,7 @@ class LLMServiceTest {
                 problemContent
         );
 
-        given(llmRepository.getById(any(UUID.class))).willReturn(taskRecord);
+        given(llmTaskRepository.getById(any(UUID.class))).willReturn(taskRecord);
         given(summaryRepository.getById(anyLong())).willReturn(summary);
         given(problemRepository.getById(anyLong())).willReturn(problem);
 
@@ -143,13 +143,13 @@ class LLMServiceTest {
         given(summary.getPageNumber()).willReturn(pageNumber);
 
         // when
-        Integer resultPageNumber = llmService.updateSummaryAndProblem(command);
+        Integer resultPageNumber = llmTaskService.updateSummaryAndProblem(command);
 
         // then
         assertAll(() -> verify(taskRecord).completeTask(),
                 () -> verify(summary).updateContent(summaryContent),
                 () -> verify(problem).updateContent(problemContent),
-                () -> verify(llmRepository, times(1)).save(taskRecord),
+                () -> verify(llmTaskRepository, times(1)).save(taskRecord),
                 () -> verify(summaryRepository, times(1)).save(summary),
                 () -> verify(problemRepository, times(1)).save(problem),
                 () -> assertEquals(pageNumber, resultPageNumber)

@@ -1,13 +1,6 @@
 package notai.llm.application;
 
 import static java.util.stream.Collectors.groupingBy;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import notai.annotation.domain.Annotation;
 import notai.annotation.domain.AnnotationRepository;
@@ -15,17 +8,24 @@ import notai.client.ai.AiClient;
 import notai.client.ai.request.LlmTaskRequest;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
-import notai.llm.application.command.LLMSubmitCommand;
+import notai.llm.application.command.LlmTaskSubmitCommand;
 import notai.llm.application.command.SummaryAndProblemUpdateCommand;
-import notai.llm.application.result.LLMSubmitResult;
-import notai.llm.domain.LLM;
-import notai.llm.domain.LLMRepository;
+import notai.llm.application.result.LlmTaskSubmitResult;
+import notai.llm.domain.LlmTask;
+import notai.llm.domain.LlmTaskRepository;
 import notai.problem.domain.Problem;
 import notai.problem.domain.ProblemRepository;
 import notai.summary.domain.Summary;
 import notai.summary.domain.SummaryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * SummaryService 와 ExamService 는 엔티티와 관련된 로직만 처리하고
@@ -35,16 +35,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class LLMService {
+public class LlmTaskService {
 
-    private final LLMRepository llmRepository;
+    private final LlmTaskRepository llmTaskRepository;
     private final DocumentRepository documentRepository;
     private final SummaryRepository summaryRepository;
     private final ProblemRepository problemRepository;
     private final AnnotationRepository annotationRepository;
     private final AiClient aiClient;
 
-    public LLMSubmitResult submitTasks(LLMSubmitCommand command) { // TODO: 페이지 번호 검증 추가
+    public LlmTaskSubmitResult submitTasks(LlmTaskSubmitCommand command) { // TODO: 페이지 번호 검증 추가
         Document foundDocument = documentRepository.getById(command.documentId());
         List<Annotation> annotations = annotationRepository.findByDocumentId(command.documentId());
 
@@ -55,7 +55,7 @@ public class LLMService {
             submitPageTask(pageNumber, annotationsByPage, foundDocument);
         });
 
-        return LLMSubmitResult.of(command.documentId(), LocalDateTime.now());
+        return LlmTaskSubmitResult.of(command.documentId(), LocalDateTime.now());
     }
 
     private void submitPageTask(Integer pageNumber, Map<Integer, List<Annotation>> annotationsByPage, Document foundDocument) {
@@ -74,20 +74,20 @@ public class LLMService {
             Summary summary = new Summary(foundDocument, pageNumber);
             Problem problem = new Problem(foundDocument, pageNumber);
 
-            LLM taskRecord = new LLM(taskId, summary, problem);
-            llmRepository.save(taskRecord);
+            LlmTask taskRecord = new LlmTask(taskId, summary, problem);
+            llmTaskRepository.save(taskRecord);
         }
         if (foundSummary.isPresent() && foundProblem.isPresent()) {
-            LLM foundTaskRecord = llmRepository.getBySummaryAndProblem(foundSummary.get(), foundProblem.get());
-            llmRepository.delete(foundTaskRecord);
+            LlmTask foundTaskRecord = llmTaskRepository.getBySummaryAndProblem(foundSummary.get(), foundProblem.get());
+            llmTaskRepository.delete(foundTaskRecord);
 
-            LLM taskRecord = new LLM(taskId, foundSummary.get(), foundProblem.get());
-            llmRepository.save(taskRecord);
+            LlmTask taskRecord = new LlmTask(taskId, foundSummary.get(), foundProblem.get());
+            llmTaskRepository.save(taskRecord);
         }
     }
 
     public Integer updateSummaryAndProblem(SummaryAndProblemUpdateCommand command) {
-        LLM taskRecord = llmRepository.getById(command.taskId());
+        LlmTask taskRecord = llmTaskRepository.getById(command.taskId());
         Summary foundSummary = summaryRepository.getById(taskRecord.getSummary().getId());
         Problem foundProblem = problemRepository.getById(taskRecord.getProblem().getId());
 
@@ -95,7 +95,7 @@ public class LLMService {
         foundSummary.updateContent(command.summary());
         foundProblem.updateContent(command.problem());
 
-        llmRepository.save(taskRecord);
+        llmTaskRepository.save(taskRecord);
         summaryRepository.save(foundSummary);
         problemRepository.save(foundProblem);
 

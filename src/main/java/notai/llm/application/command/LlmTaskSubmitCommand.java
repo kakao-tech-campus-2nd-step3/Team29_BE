@@ -2,7 +2,7 @@ package notai.llm.application.command;
 
 import java.util.List;
 
-public record LLMSubmitCommand(
+public record LlmTaskSubmitCommand(
         Long documentId,
         List<Integer> pages
 ) {

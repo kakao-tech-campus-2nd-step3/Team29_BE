@@ -2,23 +2,23 @@ package notai.llm.query;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import notai.llm.domain.QLLM;
+import notai.llm.domain.QLlmTask;
 import notai.llm.domain.TaskStatus;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class LLMQueryRepository {
+public class LlmTaskQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
     public TaskStatus getTaskStatusBySummaryId(Long summaryId) {
-        QLLM lLM = QLLM.lLM;
+        QLlmTask llmTask = QLlmTask.llmTask;
 
         return queryFactory
-                .select(lLM.status)
-                .from(lLM)
-                .where(lLM.summary.id.eq(summaryId))
+                .select(llmTask.status)
+                .from(llmTask)
+                .where(llmTask.summary.id.eq(summaryId))
                 .fetchOne();
     }
 }
