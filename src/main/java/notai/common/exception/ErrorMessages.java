@@ -40,12 +40,19 @@ public enum ErrorMessages {
             "만료된 Refresh Token입니다."), INVALID_LOGIN_TYPE("지원하지 않는 소셜 로그인 타입입니다."), NOTFOUND_ACCESS_TOKEN(
             "토큰 정보가 존재하지 않습니다."),
 
+    // stt
+    STT_TASK_NOT_FOUND("음성 인식 작업을 찾을 수 없습니다."),
+    STT_TASK_ERROR("음성 인식 작업 중에 오류가 발생했습니다."),
+
     // json conversion
     JSON_CONVERSION_ERROR("JSON-객체 변환 중에 오류가 발생했습니다."),
 
     // etc
-    INVALID_FILE_TYPE("지원하지 않는 파일 형식입니다."), FILE_NOT_FOUND("존재하지 않는 파일입니다."), FILE_SAVE_ERROR(
-            "파일을 저장하는 과정에서 오류가 발생했습니다."), INVALID_AUDIO_ENCODING("오디오 파일이 잘못되었습니다.");
+    INVALID_FILE_TYPE("지원하지 않는 파일 형식입니다."),
+    FILE_NOT_FOUND("존재하지 않는 파일입니다."),
+    FILE_SAVE_ERROR("파일을 저장하는 과정에서 오류가 발생했습니다."),
+    INVALID_AUDIO_ENCODING("오디오 파일이 잘못되었습니다."),
+    FILE_READ_ERROR("파일을 읽는 과정에서 오류가 발생했습니다.");
 
     private final String message;
 
