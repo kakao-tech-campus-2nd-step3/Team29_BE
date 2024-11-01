@@ -9,6 +9,7 @@ import notai.common.exception.type.NotFoundException;
 import notai.pdf.result.PdfSaveResult;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PdfService {
 
-    private static final String STORAGE_DIR = "src/main/resources/pdf/";
+    @Value("${file.pdf.basePath}")
+    private String STORAGE_DIR;
 
     public PdfSaveResult savePdf(MultipartFile file) {
         try {

@@ -2,6 +2,8 @@ package notai.recording.application;
 
 import lombok.RequiredArgsConstructor;
 import notai.common.domain.vo.FilePath;
+import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
+import static notai.common.exception.ErrorMessages.INVALID_AUDIO_ENCODING;
 import notai.common.exception.type.BadRequestException;
 import notai.common.exception.type.InternalServerErrorException;
 import notai.common.utils.AudioDecoder;
@@ -12,6 +14,8 @@ import notai.recording.application.command.RecordingSaveCommand;
 import notai.recording.application.result.RecordingSaveResult;
 import notai.recording.domain.Recording;
 import notai.recording.domain.RecordingRepository;
+import notai.stt.application.SttTaskService;
+import notai.stt.application.command.SttRequestCommand;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
-import static notai.common.exception.ErrorMessages.INVALID_AUDIO_ENCODING;
 
 @Service
 @Transactional
@@ -32,6 +33,7 @@ public class RecordingService {
     private final DocumentRepository documentRepository;
     private final AudioDecoder audioDecoder;
     private final FileManager fileManager;
+    private final SttTaskService sttTaskService;
 
     @Value("${file.audio.basePath}")
     private String audioBasePath;
@@ -51,6 +53,9 @@ public class RecordingService {
 
             fileManager.save(binaryAudioData, outputPath);
             savedRecording.updateFilePath(filePath);
+
+            SttRequestCommand sttCommand = new SttRequestCommand(savedRecording.getId(), filePath.getFilePath());
+            sttTaskService.submitSttTask(sttCommand);
 
             return RecordingSaveResult.of(savedRecording.getId(), foundDocument.getId(), savedRecording.getCreatedAt());
 

@@ -8,14 +8,13 @@ import notai.recording.domain.Recording;
 import notai.recording.domain.RecordingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PageRecordingServiceTest {
@@ -35,8 +34,7 @@ class PageRecordingServiceTest {
         Long recordingId = 1L;
         Long documentId = 1L;
 
-        PageRecordingSaveCommand command = new PageRecordingSaveCommand(
-                recordingId,
+        PageRecordingSaveCommand command = new PageRecordingSaveCommand(recordingId,
                 documentId,
                 List.of(new PageRecordingSession(1, 100.0, 185.5), new PageRecordingSession(5, 185.5, 290.3))
         );
