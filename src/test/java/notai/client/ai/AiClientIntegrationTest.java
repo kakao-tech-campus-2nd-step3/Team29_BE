@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 @SpringBootTest
 @Tag("exclude-test") // 테스트 필요할때 주석
@@ -34,16 +35,15 @@ class AiClientIntegrationTest {
     @Test
     void STT_태스크_제출_통합_테스트() {
         // Given
-        MockMultipartFile audioFile = new MockMultipartFile(
-                "audio", "test.mp3", "audio/mpeg", "test audio content".getBytes()
-        );
+        byte[] audioBytes = "test audio content".getBytes();
+        InputStream audioInputStream = new ByteArrayInputStream(audioBytes);
 
         // When
-        TaskResponse response = aiClient.submitSttTask(audioFile);
+        TaskResponse response = aiClient.submitSttTask(audioInputStream);
 
         // Then
         assertNotNull(response);
         assertNotNull(response.taskId());
-        assertEquals("llm", response.taskType());
+        assertEquals("stt", response.taskType());
     }
 }

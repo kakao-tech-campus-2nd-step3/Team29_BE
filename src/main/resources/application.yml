@@ -1,7 +1,4 @@
 spring:
   profiles:
-    active: local
+    active: prod
 
-file:
-  audio:
-    basePath: /app/audio/  # Docker 볼륨에 맞게 경로 수정

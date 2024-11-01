@@ -13,4 +13,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long>, Docum
     }
 
     List<Document> findAllByFolderId(Long folderId);
+
+    List<Document> findAllByMemberIdAndFolderIdIsNull(Long memberId);
 }

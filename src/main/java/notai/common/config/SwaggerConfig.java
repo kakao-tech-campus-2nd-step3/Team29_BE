@@ -38,6 +38,6 @@ public class SwaggerConfig {
     }
 
     private Info apiInfo() {
-        return new Info().title("notai API").description("notai API 문서입니다.").version("0.0.1");
+        return new Info().title("notai API").description("notai API 문서입니다.").version("0.0.2");
     }
 }

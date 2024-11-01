@@ -8,10 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import notai.common.domain.RootEntity;
-import static notai.common.exception.ErrorMessages.DOCUMENT_NOT_FOUND;
-import static notai.common.exception.ErrorMessages.INVALID_DOCUMENT_PAGE;
+import notai.common.exception.ErrorMessages;
+import static notai.common.exception.ErrorMessages.*;
 import notai.common.exception.type.NotFoundException;
+import notai.common.exception.type.UnAuthorizedException;
 import notai.folder.domain.Folder;
+import notai.member.domain.Member;
 
 @Slf4j
 @Entity
@@ -28,6 +30,10 @@ public class Document extends RootEntity<Long> {
     @JoinColumn(name = "folder_id", referencedColumnName = "id")
     private Folder folder;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", referencedColumnName = "id")
+    private Member member;
+
     @NotNull
     @Column(name = "name", length = 50)
     private String name;
@@ -40,14 +46,16 @@ public class Document extends RootEntity<Long> {
     @Column(name = "total_pages")
     private Integer totalPages;
 
-    public Document(Folder folder, String name, String url, Integer totalPages) {
+    public Document(Folder folder, Member member, String name, String url, Integer totalPages) {
+        this.member = member;
         this.folder = folder;
         this.name = name;
         this.url = url;
         this.totalPages = totalPages;
     }
 
-    public Document(String name, String url, Integer totalPages) {
+    public Document(Member member, String name, String url, Integer totalPages) {
+        this.member = member;
         this.name = name;
         this.url = url;
         this.totalPages = totalPages;
@@ -67,5 +75,11 @@ public class Document extends RootEntity<Long> {
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void validateOwner(Member member) {
+        if (!this.member.equals(member)) {
+            throw new UnAuthorizedException(UNAUTHORIZED_DOCUMENT_ACCESS);
+        }
     }
 }

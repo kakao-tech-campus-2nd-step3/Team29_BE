@@ -1,12 +1,10 @@
 package notai.pageRecording.query;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import notai.pageRecording.domain.PageRecording;
 
-@Repository
-@RequiredArgsConstructor
-public class PageRecordingQueryRepository {
+import java.util.List;
 
-    private final JPAQueryFactory queryFactory;
+public interface PageRecordingQueryRepository {
+
+    List<PageRecording> findAllByRecordingIdOrderByStartTime(Long recordingId);
 }
