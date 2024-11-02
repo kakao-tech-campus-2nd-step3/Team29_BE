@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'notai'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2'
 
 java {
     toolchain {
@@ -59,6 +59,9 @@ dependencies {
 
     // OCR
     implementation 'net.sourceforge.tess4j:tess4j:5.13.0'
+
+    // Slack
+    implementation("com.slack.api:slack-api-client:1.44.1")
 }
 
 tasks.named('test') {
@@ -69,4 +72,12 @@ test {
     useJUnitPlatform {
         excludeTags 'exclude-test'
     }
+}
+
+processResources.dependsOn('copySecret')
+
+tasks.register('copySecret', Copy) {
+    from './Team29_BE_Submodule'
+    include "**"
+    into './src/main/resources'
 }

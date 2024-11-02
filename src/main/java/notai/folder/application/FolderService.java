@@ -71,7 +71,7 @@ public class FolderService {
         for (Folder subFolder : subFolders) {
             deleteFolder(memberId, subFolder.getId());
         }
-        documentService.deleteAllByFolder(folder);
+        documentService.deleteAllByFolder(memberId, folder);
         folderRepository.delete(folder);
     }
 

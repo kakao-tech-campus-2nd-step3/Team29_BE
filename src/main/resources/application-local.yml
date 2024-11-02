@@ -29,6 +29,11 @@ spring:
   mvc:
     converters:
       preferred-json-mapper: gson
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
 
 server:
   servlet:
@@ -43,3 +48,16 @@ token: # todo production에서 secretKey 변경
   secretKey: "ZGQrT0tuZHZkRWRxeXJCamRYMDFKMnBaR2w5WXlyQm9HU2RqZHNha1gycFlkMWpLc0dObw=="
   accessTokenExpirationMillis: 10000000000
   refreshTokenExpirationMillis: 10000000000
+
+file:
+  audio:
+    basePath: audio/
+  pdf:
+    basePath: pdf/
+
+tesseract:
+  library:
+    path: C:\\Program Files\\Tesseract-OCR
+  data:
+    path: C:\\Program Files\\Tesseract-OCR\\tessdata
+  language: kor+eng

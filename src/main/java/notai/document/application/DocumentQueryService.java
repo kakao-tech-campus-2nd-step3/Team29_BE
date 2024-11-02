@@ -19,6 +19,11 @@ public class DocumentQueryService {
         return documents.stream().map(this::getDocumentFindResult).toList();
     }
 
+    public List<DocumentFindResult> findRootDocuments(Long memberId) {
+        List<Document> documents = documentRepository.findAllByMemberIdAndFolderIdIsNull(memberId);
+        return documents.stream().map(this::getDocumentFindResult).toList();
+    }
+
     private DocumentFindResult getDocumentFindResult(Document document) {
         return DocumentFindResult.of(document.getId(), document.getName(), document.getUrl());
     }
