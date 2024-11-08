@@ -2,6 +2,8 @@ package notai.recording.application;
 
 import lombok.RequiredArgsConstructor;
 import notai.common.domain.vo.FilePath;
+import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
+import static notai.common.exception.ErrorMessages.INVALID_AUDIO_ENCODING;
 import notai.common.exception.type.BadRequestException;
 import notai.common.exception.type.InternalServerErrorException;
 import notai.common.utils.AudioDecoder;
@@ -22,9 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
-import static notai.common.exception.ErrorMessages.INVALID_AUDIO_ENCODING;
 
 @Service
 @Transactional
