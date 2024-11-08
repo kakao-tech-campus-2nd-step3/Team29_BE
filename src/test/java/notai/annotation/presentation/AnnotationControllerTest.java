@@ -1,22 +1,29 @@
-package notai.annotation;
+package notai.annotation.presentation;
 
 import notai.annotation.application.AnnotationQueryService;
 import notai.annotation.application.AnnotationService;
-import notai.annotation.presentation.AnnotationController;
 import notai.annotation.presentation.request.CreateAnnotationRequest;
 import notai.annotation.presentation.response.AnnotationResponse;
+import notai.auth.TokenService;
+import notai.member.domain.Member;
+import notai.member.domain.MemberRepository;
+import notai.member.domain.OauthId;
+import notai.member.domain.OauthProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,15 +38,26 @@ class AnnotationControllerTest {
     @Mock
     private AnnotationQueryService annotationQueryService;
 
+    @Mock
+    private MemberRepository memberRepository;
+
     @InjectMocks
     private AnnotationController annotationController;
 
     private MockMvc mockMvc;
 
+    private static final Member member = new Member(
+            new OauthId("oauthId", OauthProvider.KAKAO), "email.com", "nickname"
+    );
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(annotationController).build();
+
+        given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+        TokenService tokenService = Mockito.mock(TokenService.class);
+        given(tokenService.extractMemberId(any())).willReturn(1L);
     }
 
     @Test
@@ -48,12 +66,13 @@ class AnnotationControllerTest {
         LocalDateTime now = LocalDateTime.now();
         AnnotationResponse response = new AnnotationResponse(1L, 1L, 1, 100, 200, 300, 100, "<span class=\"bold\">굵은글씨</span>", now.toString(), now.toString());
 
-        when(annotationService.createAnnotation(anyLong(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyString()))
+        when(annotationService.createAnnotation(any(Member.class), anyLong(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyString()))
                 .thenReturn(response);
 
         mockMvc.perform(post("/api/documents/1/annotations")
                         .contentType("application/json")
-                        .content("{\"pageNumber\": 1, \"x\": 100, \"y\": 200, \"width\": 300, \"height\": 100, \"content\": \"<span class='bold'>굵은글씨</span>\"}"))
+                        .content("{\"pageNumber\": 1, \"x\": 100, \"y\": 200, \"width\": 300, \"height\": 100, \"content\": \"<span class='bold'>굵은글씨</span>\"}")
+                       .header("Authorization", "Bearer token"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.pageNumber").value(1))
@@ -74,11 +93,12 @@ class AnnotationControllerTest {
                 new AnnotationResponse(2L, 1L, 2, 150, 250, 350, 120, "", now.toString(), now.toString())
         );
 
-        when(annotationQueryService.getAnnotationsByDocumentAndPageNumbers(anyLong(), anyList())).thenReturn(responses);
+        when(annotationQueryService.getAnnotationsByDocumentAndPageNumbers(any(Member.class), anyLong(), anyList())).thenReturn(responses);
 
         mockMvc.perform(get("/api/documents/1/annotations?pageNumbers=1,2")
-                        .contentType("application/json"))
-                .andExpect(status().isOk())
+                        .contentType("application/json")
+                        .header("Authorization", "Bearer token"))
+               .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].pageNumber").value(1))
                 .andExpect(jsonPath("$[0].x").value(100))
@@ -102,13 +122,14 @@ class AnnotationControllerTest {
         LocalDateTime now = LocalDateTime.now();
         AnnotationResponse response = new AnnotationResponse(1L, 1L, 1, 150, 250, 350, 120, "수정된 주석", now.toString(), now.toString());
 
-        when(annotationService.updateAnnotation(anyLong(), anyLong(), anyInt(), anyInt(), anyInt(), anyInt(), anyString()))
+        when(annotationService.updateAnnotation(any(Member.class), anyLong(), anyLong(), anyInt(), anyInt(), anyInt(), anyInt(), anyString()))
                 .thenReturn(response);
 
         mockMvc.perform(put("/api/documents/1/annotations/1")
                         .contentType("application/json")
-                        .content("{\"pageNumber\": 1, \"x\": 150, \"y\": 250, \"width\": 350, \"height\": 120, \"content\": \"수정된 주석\"}"))
-                .andExpect(status().isOk())
+                        .content("{\"pageNumber\": 1, \"x\": 150, \"y\": 250, \"width\": 350, \"height\": 120, \"content\": \"수정된 주석\"}")
+                        .header("Authorization", "Bearer token"))
+               .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.pageNumber").value(1))
                 .andExpect(jsonPath("$.content").value("수정된 주석"))
@@ -121,12 +142,13 @@ class AnnotationControllerTest {
 
     @Test
     void testDeleteAnnotation_success() throws Exception {
-        doNothing().when(annotationService).deleteAnnotation(anyLong(), anyLong());
+        doNothing().when(annotationService).deleteAnnotation(any(Member.class), anyLong(), anyLong());
 
         mockMvc.perform(delete("/api/documents/1/annotations/1")
-                        .contentType("application/json"))
-                .andExpect(status().isNoContent());
+                        .contentType("application/json")
+                        .header("Authorization", "Bearer token"))
+               .andExpect(status().isOk());
 
-        verify(annotationService, times(1)).deleteAnnotation(1L, 1L);
+        verify(annotationService, times(1)).deleteAnnotation(any(Member.class),anyLong(), anyLong());
     }
 }

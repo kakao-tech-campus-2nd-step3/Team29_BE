@@ -15,12 +15,13 @@ import notai.stt.domain.Stt;
 import notai.stt.domain.SttRepository;
 import notai.sttTask.domain.SttTask;
 import notai.sttTask.domain.SttTaskRepository;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 @Service
 @Transactional
@@ -35,8 +36,17 @@ public class SttTaskService {
         Recording recording = recordingRepository.getById(command.recordingId());
         File audioFile = validateAudioFile(command.audioFilePath());
 
-        try (FileInputStream fileInputStream = new FileInputStream(audioFile)) {
-            TaskResponse response = aiClient.submitSttTask(fileInputStream);
+        try {
+            byte[] audioBytes = Files.readAllBytes(audioFile.toPath());
+            
+            ByteArrayResource resource = new ByteArrayResource(audioBytes) {
+                @Override
+                public String getFilename() {
+                    return audioFile.getName();
+                }
+            };
+            
+            TaskResponse response = aiClient.submitSttTask(resource);
             createAndSaveSttTask(recording, response);
         } catch (IOException e) {
             throw new FileProcessException(FILE_READ_ERROR);

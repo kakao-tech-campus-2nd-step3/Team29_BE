@@ -33,6 +33,7 @@ public class SttService {
         SttTask sttTask = sttTaskRepository.getById(command.taskId());
         Stt stt = sttTask.getStt();
         Recording recording = stt.getRecording();
+
         List<PageRecording> pageRecordings = pageRecordingRepository.findAllByRecordingIdOrderByStartTime(recording.getId());
 
         SttPageMatchedDto matchedResult = stt.matchWordsWithPages(command.words(), pageRecordings);

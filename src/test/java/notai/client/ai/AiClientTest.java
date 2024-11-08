@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.io.ByteArrayResource;
 
 import java.io.InputStream;
 import java.util.UUID;
@@ -41,16 +42,16 @@ class AiClientTest {
     @Test
     void STT_테스크_전달_테스트() {
         // Given
-        InputStream inputStream = mock(InputStream.class);
+        ByteArrayResource byteArrayResource = mock(ByteArrayResource.class);
         UUID expectedTaskId = UUID.randomUUID();
         TaskResponse expectedResponse = new TaskResponse(expectedTaskId, "stt");
-        when(aiClient.submitSttTask(inputStream)).thenReturn(expectedResponse);
+        when(aiClient.submitSttTask(byteArrayResource)).thenReturn(expectedResponse);
 
         // When
-        TaskResponse response = aiClient.submitSttTask(inputStream);
+        TaskResponse response = aiClient.submitSttTask(byteArrayResource);
 
         // Then
         assertEquals(expectedResponse, response);
-        verify(aiClient, times(1)).submitSttTask(inputStream);
+        verify(aiClient, times(1)).submitSttTask(byteArrayResource);
     }
 }

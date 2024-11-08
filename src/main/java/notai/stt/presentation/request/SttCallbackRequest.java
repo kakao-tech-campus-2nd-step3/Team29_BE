@@ -1,38 +1,29 @@
 package notai.stt.presentation.request;
 
 import notai.stt.application.command.UpdateSttResultCommand;
-import notai.stt.application.command.UpdateSttResultCommand.Word;
 
 import java.util.List;
 import java.util.UUID;
 
 public record SttCallbackRequest(
         String taskId,
-        String state,
-        SttResult result
+        String text,
+        List<Word> words
 ) {
     public UpdateSttResultCommand toCommand() {
-        List<Word> words = result.words().stream()
-                .map(word -> new Word(
+        List<UpdateSttResultCommand.Word> commandWords = words().stream()
+                .map(word -> new UpdateSttResultCommand.Word(
                         word.word(),
                         word.start(),
-                        word.end()
-                ))
+                        word.end()))
                 .toList();
-        return new UpdateSttResultCommand(UUID.fromString(taskId), words);
+        return new UpdateSttResultCommand(UUID.fromString(taskId), commandWords);
     }
-
-    public record SttResult(
-            double audioLength,
-            String language,
-            double languageProbability,
-            String text,
-            List<Word> words
+    
+    public record Word(
+            String word,
+            double start,
+            double end
     ) {
-        public record Word(
-                double start,
-                double end,
-                String word
-        ) {}
     }
 }

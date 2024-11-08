@@ -21,19 +21,20 @@ import notai.problem.domain.Problem;
 import notai.problem.domain.ProblemRepository;
 import notai.summary.domain.Summary;
 import notai.summary.domain.SummaryRepository;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LlmTaskServiceTest {
@@ -69,7 +70,8 @@ class LlmTaskServiceTest {
         given(documentRepository.getById(anyLong())).willThrow(NotFoundException.class);
 
         // when & then
-        assertAll(() -> assertThrows(NotFoundException.class, () -> llmTaskService.submitTasks(command)),
+        assertAll(
+                () -> assertThrows(NotFoundException.class, () -> llmTaskService.submitTasks(command)),
                 () -> verify(documentRepository, times(1)).getById(documentId),
                 () -> verify(llmTaskRepository, never()).save(any(LlmTask.class))
         );
@@ -84,9 +86,10 @@ class LlmTaskServiceTest {
 
         Member member = new Member(new OauthId("12345", OauthProvider.KAKAO), "test@example.com", "TestUser");
         Folder folder = new Folder(member, "TestFolder");
-        Document document = new Document(folder, "TestDocument", "http://example.com/test.pdf", 43);
+        Document document = new Document(folder, member, "TestDocument", "http://example.com/test.pdf", 43);
 
-        List<Annotation> annotations = List.of(new Annotation(document, 1, 10, 20, 100, 50, "Annotation 1"),
+        List<Annotation> annotations = List.of(
+                new Annotation(document, 1, 10, 20, 100, 50, "Annotation 1"),
                 new Annotation(document, 1, 30, 40, 80, 60, "Annotation 2"),
                 new Annotation(document, 2, 50, 60, 120, 70, "Annotation 3")
         );
@@ -103,7 +106,8 @@ class LlmTaskServiceTest {
         LlmTaskSubmitResult result = llmTaskService.submitTasks(command);
 
         // then
-        assertAll(() -> verify(documentRepository, times(1)).getById(documentId),
+        assertAll(
+                () -> verify(documentRepository, times(1)).getById(documentId),
                 () -> verify(annotationRepository, times(1)).findByDocumentId(documentId),
                 () -> verify(aiClient, times(2)).submitLlmTask(any(LlmTaskRequest.class)),
                 () -> verify(llmTaskRepository, times(2)).save(any(LlmTask.class))
@@ -127,7 +131,8 @@ class LlmTaskServiceTest {
         Summary summary = mock(Summary.class);
         Problem problem = mock(Problem.class);
 
-        SummaryAndProblemUpdateCommand command = new SummaryAndProblemUpdateCommand(taskId,
+        SummaryAndProblemUpdateCommand command = new SummaryAndProblemUpdateCommand(
+                taskId,
                 summaryContent,
                 problemContent
         );
@@ -146,7 +151,8 @@ class LlmTaskServiceTest {
         Integer resultPageNumber = llmTaskService.updateSummaryAndProblem(command);
 
         // then
-        assertAll(() -> verify(taskRecord).completeTask(),
+        assertAll(
+                () -> verify(taskRecord).completeTask(),
                 () -> verify(summary).updateContent(summaryContent),
                 () -> verify(problem).updateContent(problemContent),
                 () -> verify(llmTaskRepository, times(1)).save(taskRecord),

@@ -92,7 +92,7 @@ public class Stt extends RootEntity<Long> {
         for (PageRecording page : pageRecordings) {
             List<SttPageMatchedDto.PageMatchedWord> pageWords = new ArrayList<>();
             double pageStart = page.getStartTime();
-            double pageEnd = page.getEndTime();
+            Double pageEnd = page.getEndTime();
 
             // 현재 페이지의 시간 범위에 속하는 단어들을 찾아 매칭
             while (wordIndex < words.size()) {
@@ -104,18 +104,17 @@ public class Stt extends RootEntity<Long> {
                     continue;
                 }
 
-                // 마지막 페이지가 아닐 경우, 페이지 종료 시간을 벗어난 단어가 나오면 다음 페이지로
-                if (page != lastPage && word.start() - TIME_THRESHOLD >= pageEnd) {
+                // 마지막 페이지이거나 endTime이 null이면 시작 시간만 체크
+                if ((page == lastPage || pageEnd == null) || word.start() - TIME_THRESHOLD < pageEnd) {
+                    pageWords.add(new SttPageMatchedDto.PageMatchedWord(
+                            word.word(),
+                            (int) word.start(),
+                            (int) word.end()
+                    ));
+                    wordIndex++;
+                } else {
                     break;
                 }
-
-                // 현재 페이지에 단어 매칭하여 추가
-                pageWords.add(new SttPageMatchedDto.PageMatchedWord(
-                        word.word(),
-                        (int) word.start(),
-                        (int) word.end()
-                ));
-                wordIndex++;
             }
 
             // 매칭된 단어가 있는 경우만 맵에 추가

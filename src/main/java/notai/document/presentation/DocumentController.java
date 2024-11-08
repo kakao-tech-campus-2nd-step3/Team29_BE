@@ -1,5 +1,7 @@
 package notai.document.presentation;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import lombok.RequiredArgsConstructor;
 import notai.auth.Auth;
 import notai.document.application.DocumentQueryService;
@@ -12,6 +14,8 @@ import notai.document.presentation.request.DocumentUpdateRequest;
 import notai.document.presentation.response.DocumentFindResponse;
 import notai.document.presentation.response.DocumentSaveResponse;
 import notai.document.presentation.response.DocumentUpdateResponse;
+import notai.member.domain.Member;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,19 +34,20 @@ public class DocumentController {
     private static final Long ROOT_FOLDER_ID = -1L;
     private static final String FOLDER_URL_FORMAT = "/api/folders/%s/documents/%s";
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentSaveResponse> saveDocument(
-            @Auth Long memberId,
+            @Auth Member member,
             @PathVariable Long folderId,
+            @Parameter(content = @Content(mediaType = MediaType.APPLICATION_PDF_VALUE))
             @RequestPart MultipartFile pdfFile,
             @RequestPart DocumentSaveRequest documentSaveRequest
     ) {
 
         DocumentSaveResult documentSaveResult;
         if (folderId.equals(ROOT_FOLDER_ID)) {
-            documentSaveResult = documentService.saveRootDocument(memberId, pdfFile, documentSaveRequest);
+            documentSaveResult = documentService.saveRootDocument(member, pdfFile, documentSaveRequest);
         } else {
-            documentSaveResult = documentService.saveDocument(memberId, folderId, pdfFile, documentSaveRequest);
+            documentSaveResult = documentService.saveDocument(member, folderId, pdfFile, documentSaveRequest);
         }
         DocumentSaveResponse response = DocumentSaveResponse.from(documentSaveResult);
         String url = String.format(FOLDER_URL_FORMAT, folderId, response.id());
@@ -51,13 +56,13 @@ public class DocumentController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<DocumentUpdateResponse> updateDocument(
-            @Auth Long memberId,
+            @Auth Member member,
             @PathVariable Long folderId,
             @PathVariable Long id,
             @RequestBody DocumentUpdateRequest documentUpdateRequest
     ) {
         DocumentUpdateResult documentUpdateResult = documentService.updateDocument(
-                memberId,
+                member,
                 folderId,
                 id,
                 documentUpdateRequest
@@ -68,11 +73,11 @@ public class DocumentController {
 
     @GetMapping
     public ResponseEntity<List<DocumentFindResponse>> getDocuments(
-            @Auth Long memberId, @PathVariable Long folderId
+            @Auth Member member, @PathVariable Long folderId
     ) {
         List<DocumentFindResult> documentResults;
         if (folderId.equals(ROOT_FOLDER_ID)) {
-            documentResults = documentQueryService.findRootDocuments(memberId);
+            documentResults = documentQueryService.findRootDocuments(member);
         } else {
             documentResults = documentQueryService.findDocuments(folderId);
         }
@@ -83,9 +88,9 @@ public class DocumentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDocument(
-            @Auth Long memberId, @PathVariable Long folderId, @PathVariable Long id
+            @Auth Member member, @PathVariable Long folderId, @PathVariable Long id
     ) {
-        documentService.deleteDocument(memberId, folderId, id);
+        documentService.deleteDocument(member, folderId, id);
         return ResponseEntity.noContent().build();
     }
 }

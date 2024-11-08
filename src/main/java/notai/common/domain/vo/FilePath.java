@@ -14,7 +14,7 @@ import static notai.common.exception.ErrorMessages.INVALID_FILE_TYPE;
 @NoArgsConstructor(access = PROTECTED)
 public class FilePath {
 
-    @Column(length = 50)
+    @Column(length = 255)
     private String filePath;
 
     private FilePath(String filePath) {
@@ -22,11 +22,6 @@ public class FilePath {
     }
 
     public static FilePath from(String filePath) {
-        // 추후 확장자 추가
-        if (!filePath.matches(
-                "[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣()\\[\\]+\\-&/_\\s]+(/[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣()\\[\\]+\\-&/_\\s]+)*/?[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣()\\[\\]+\\-&/_\\s]+\\.mp3")) {
-            throw new BadRequestException(INVALID_FILE_TYPE);
-        }
         return new FilePath(filePath);
     }
 }

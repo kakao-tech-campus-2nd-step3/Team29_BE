@@ -59,8 +59,8 @@ public class Folder extends RootEntity<Long> {
         this.parentFolder = parentFolder;
     }
 
-    public void validateOwner(Long memberId) {
-        if (!this.member.getId().equals(memberId)) {
+    public void validateOwner(Member member) {
+        if (!this.member.getId().equals(member.getId())) {
             log.info("폴더 소유자가 요청 사용자와 다릅니다.");
             throw new NotFoundException(FOLDER_NOT_FOUND);
         }

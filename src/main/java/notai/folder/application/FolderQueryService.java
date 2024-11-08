@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import notai.folder.application.result.FolderFindResult;
 import notai.folder.domain.Folder;
 import notai.folder.domain.FolderRepository;
+import notai.member.domain.Member;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,17 +15,17 @@ public class FolderQueryService {
 
     private final FolderRepository folderRepository;
 
-    public List<FolderFindResult> getFolders(Long memberId, Long parentFolderId) {
-        List<Folder> folders = getFoldersWithMemberAndParent(memberId, parentFolderId);
+    public List<FolderFindResult> getFolders(Member member, Long parentFolderId) {
+        List<Folder> folders = getFoldersWithMemberAndParent(member, parentFolderId);
         // document read
         return folders.stream().map(this::getFolderResult).toList();
     }
 
-    private List<Folder> getFoldersWithMemberAndParent(Long memberId, Long parentFolderId) {
+    private List<Folder> getFoldersWithMemberAndParent(Member member, Long parentFolderId) {
         if (parentFolderId == null) {
-            return folderRepository.findAllByMemberIdAndParentFolderIsNull(memberId);
+            return folderRepository.findAllByMemberIdAndParentFolderIsNull(member.getId());
         }
-        return folderRepository.findAllByMemberIdAndParentFolderId(memberId, parentFolderId);
+        return folderRepository.findAllByMemberIdAndParentFolderId(member.getId(), parentFolderId);
     }
 
     private FolderFindResult getFolderResult(Folder folder) {
