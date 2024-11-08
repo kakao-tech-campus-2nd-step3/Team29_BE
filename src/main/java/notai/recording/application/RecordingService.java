@@ -60,7 +60,7 @@ public class RecordingService {
             return RecordingSaveResult.of(savedRecording.getId(), foundDocument.getId(), savedRecording.getCreatedAt());
 
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException(INVALID_AUDIO_ENCODING);
+            throw new BadRequestException(INVALID_AUDIO_ENCODING + " : " + e.getMessage());
         } catch (IOException e) {
             throw new InternalServerErrorException(FILE_SAVE_ERROR); // TODO: 재시도 로직 추가?
         }

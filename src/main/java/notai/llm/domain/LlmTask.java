@@ -25,12 +25,12 @@ public class LlmTask extends RootEntity<UUID> {
     private UUID id;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "summary_id")
     private Summary summary;
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
     private Problem problem;
 

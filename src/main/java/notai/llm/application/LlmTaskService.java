@@ -73,6 +73,8 @@ public class LlmTaskService {
         if (foundSummary.isEmpty() && foundProblem.isEmpty()) {
             Summary summary = new Summary(foundDocument, pageNumber);
             Problem problem = new Problem(foundDocument, pageNumber);
+            summaryRepository.save(summary);
+            problemRepository.save(problem);
 
             LlmTask taskRecord = new LlmTask(taskId, summary, problem);
             llmTaskRepository.save(taskRecord);
@@ -80,6 +82,7 @@ public class LlmTaskService {
         if (foundSummary.isPresent() && foundProblem.isPresent()) {
             LlmTask foundTaskRecord = llmTaskRepository.getBySummaryAndProblem(foundSummary.get(), foundProblem.get());
             llmTaskRepository.delete(foundTaskRecord);
+            llmTaskRepository.flush();
 
             LlmTask taskRecord = new LlmTask(taskId, foundSummary.get(), foundProblem.get());
             llmTaskRepository.save(taskRecord);

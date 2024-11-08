@@ -28,7 +28,7 @@ public class OCR extends RootEntity<Long> {
     private Integer pageNumber;
 
     @NotNull
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "LONGTEXT")
     private String content;
 
     public OCR(Document document, Integer pageNumber, String content) {

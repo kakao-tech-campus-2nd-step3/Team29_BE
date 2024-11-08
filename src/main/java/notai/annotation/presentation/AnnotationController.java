@@ -76,6 +76,6 @@ public class AnnotationController {
     ) {
 
         annotationService.deleteAnnotation(documentId, annotationId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

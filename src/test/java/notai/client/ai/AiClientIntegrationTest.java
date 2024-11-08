@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ByteArrayResource;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -36,10 +38,10 @@ class AiClientIntegrationTest {
     void STT_태스크_제출_통합_테스트() {
         // Given
         byte[] audioBytes = "test audio content".getBytes();
-        InputStream audioInputStream = new ByteArrayInputStream(audioBytes);
+        ByteArrayResource byteArrayResource = new ByteArrayResource(audioBytes);
 
         // When
-        TaskResponse response = aiClient.submitSttTask(audioInputStream);
+        TaskResponse response = aiClient.submitSttTask(byteArrayResource);
 
         // Then
         assertNotNull(response);
