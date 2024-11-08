@@ -147,7 +147,7 @@ class AnnotationControllerTest {
         mockMvc.perform(delete("/api/documents/1/annotations/1")
                         .contentType("application/json")
                         .header("Authorization", "Bearer token"))
-               .andExpect(status().isNoContent());
+               .andExpect(status().isOk());
 
         verify(annotationService, times(1)).deleteAnnotation(any(Member.class),anyLong(), anyLong());
     }
