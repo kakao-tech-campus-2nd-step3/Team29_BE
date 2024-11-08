@@ -2,14 +2,13 @@ package notai.recording.application;
 
 import lombok.RequiredArgsConstructor;
 import notai.common.domain.vo.FilePath;
-import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
-import static notai.common.exception.ErrorMessages.INVALID_AUDIO_ENCODING;
 import notai.common.exception.type.BadRequestException;
 import notai.common.exception.type.InternalServerErrorException;
 import notai.common.utils.AudioDecoder;
 import notai.common.utils.FileManager;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
+import notai.member.domain.Member;
 import notai.recording.application.command.RecordingSaveCommand;
 import notai.recording.application.result.RecordingSaveResult;
 import notai.recording.domain.Recording;
@@ -23,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static notai.common.exception.ErrorMessages.FILE_SAVE_ERROR;
+import static notai.common.exception.ErrorMessages.INVALID_AUDIO_ENCODING;
 
 @Service
 @Transactional
@@ -38,8 +40,9 @@ public class RecordingService {
     @Value("${file.audio.basePath}")
     private String audioBasePath;
 
-    public RecordingSaveResult saveRecording(RecordingSaveCommand command) {
+    public RecordingSaveResult saveRecording(Member member, RecordingSaveCommand command) {
         Document foundDocument = documentRepository.getById(command.documentId());
+        foundDocument.validateOwner(member);
 
         Recording recording = new Recording(foundDocument);
         Recording savedRecording = recordingRepository.save(recording);

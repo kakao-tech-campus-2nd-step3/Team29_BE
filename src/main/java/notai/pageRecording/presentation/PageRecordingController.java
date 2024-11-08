@@ -1,17 +1,15 @@
 package notai.pageRecording.presentation;
 
-import static org.springframework.http.HttpStatus.CREATED;
-
 import lombok.RequiredArgsConstructor;
+import notai.auth.Auth;
+import notai.member.domain.Member;
 import notai.pageRecording.application.PageRecordingService;
 import notai.pageRecording.application.command.PageRecordingSaveCommand;
 import notai.pageRecording.presentation.request.PageRecordingSaveRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/api/documents/{documentId}/recordings/page-turns")
@@ -22,10 +20,12 @@ public class PageRecordingController {
 
     @PostMapping
     public ResponseEntity<Void> savePageRecording(
-            @PathVariable("documentId") Long documentId, @RequestBody PageRecordingSaveRequest request
+            @Auth Member member,
+            @PathVariable("documentId") Long documentId,
+            @RequestBody PageRecordingSaveRequest request
     ) {
         PageRecordingSaveCommand command = request.toCommand(documentId);
-        pageRecordingService.savePageRecording(command);
+        pageRecordingService.savePageRecording(member, command);
         return ResponseEntity.status(CREATED).build();
     }
 }

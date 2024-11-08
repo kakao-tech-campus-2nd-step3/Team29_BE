@@ -1,6 +1,8 @@
 package notai.ocr.presentation;
 
 import lombok.RequiredArgsConstructor;
+import notai.auth.Auth;
+import notai.member.domain.Member;
 import notai.ocr.application.OCRQueryService;
 import notai.ocr.application.result.OCRFindResult;
 import notai.ocr.presentation.response.OCRFindResponse;
@@ -16,9 +18,9 @@ public class OCRController {
 
     @GetMapping
     public ResponseEntity<OCRFindResponse> getDocuments(
-            @PathVariable Long documentId, @RequestParam Integer pageNumber
+            @Auth Member member, @PathVariable Long documentId, @RequestParam Integer pageNumber
     ) {
-        OCRFindResult result = ocrQueryService.findOCR(documentId, pageNumber);
+        OCRFindResult result = ocrQueryService.findOCR(member, documentId, pageNumber);
         OCRFindResponse response = OCRFindResponse.from(result);
         return ResponseEntity.ok(response);
     }
