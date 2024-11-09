@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 import notai.common.domain.vo.FilePath;
+import notai.common.exception.type.NotFoundException;
 import notai.document.domain.Document;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
+import static notai.common.exception.ErrorMessages.RECORDING_NOT_FOUND;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -37,7 +39,9 @@ public class Recording extends RootEntity<Long> {
         this.filePath = filePath;
     }
 
-    public boolean isRecordingOwnedByDocument(Long documentId) {
-        return this.document.getId().equals(documentId);
+    public void validateDocumentOwnership(Document document) {
+        if (this.document.getId().equals(document.getId())) {
+            throw new NotFoundException(RECORDING_NOT_FOUND);
+        }
     }
 }

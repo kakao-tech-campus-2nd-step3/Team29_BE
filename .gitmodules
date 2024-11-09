@@ -1,4 +1,4 @@
 [submodule "Team29_BE_Submodule"]
     path = Team29_BE_Submodule
     url = git@github.com:29ana-notai/Team29_BE_Submodule.git
-    branch = release/0.0.2
+    branch = release/0.0.3

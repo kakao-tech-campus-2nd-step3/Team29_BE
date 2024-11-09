@@ -31,7 +31,6 @@ public class PageRecording {
     @NotNull
     private Double startTime;
 
-    @NotNull
     private Double endTime;
 
     public PageRecording(Recording recording, Integer pageNumber, Double startTime, Double endTime) {

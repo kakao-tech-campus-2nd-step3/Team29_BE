@@ -3,6 +3,7 @@ package notai.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import notai.member.domain.Member;
 import notai.member.domain.MemberRepository;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Long resolveArgument(
+    public Member resolveArgument(
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
@@ -31,6 +32,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Long memberId = (Long) request.getAttribute("memberId");
-        return memberRepository.getById(memberId).getId();
+        return memberRepository.getById(memberId);
     }
 }

@@ -5,16 +5,19 @@ import notai.folder.domain.Folder;
 import notai.folder.domain.FolderRepository;
 import notai.member.domain.Member;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FolderQueryServiceTest {
@@ -23,6 +26,14 @@ class FolderQueryServiceTest {
     private FolderRepository folderRepository;
     @InjectMocks
     private FolderQueryService folderQueryService;
+
+    @Mock
+    private Member member;
+
+    @BeforeEach
+    void setUp() {
+        given(member.getId()).willReturn(1L);
+    }
 
     @Test
     @DisplayName("루트 폴더 조회")
@@ -33,7 +44,7 @@ class FolderQueryServiceTest {
 
         when(folderRepository.findAllByMemberIdAndParentFolderIsNull(any(Long.class))).thenReturn(expectedResults);
         //when
-        List<FolderFindResult> folders = folderQueryService.getFolders(1L, null);
+        List<FolderFindResult> folders = folderQueryService.getFolders(member, null);
 
         Assertions.assertThat(folders.size()).isEqualTo(1);
     }
@@ -50,7 +61,7 @@ class FolderQueryServiceTest {
         when(folderRepository.findAllByMemberIdAndParentFolderId(any(Long.class), any(Long.class))).thenReturn(
                 expectedResults);
         //when
-        List<FolderFindResult> folders = folderQueryService.getFolders(1L, 1L);
+        List<FolderFindResult> folders = folderQueryService.getFolders(member, 1L);
 
         Assertions.assertThat(folders.size()).isEqualTo(2);
     }

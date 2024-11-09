@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import notai.document.application.result.DocumentFindResult;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
+import notai.member.domain.Member;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class DocumentQueryService {
         return documents.stream().map(this::getDocumentFindResult).toList();
     }
 
-    public List<DocumentFindResult> findRootDocuments(Long memberId) {
-        List<Document> documents = documentRepository.findAllByMemberIdAndFolderIdIsNull(memberId);
+    public List<DocumentFindResult> findRootDocuments(Member member) {
+        List<Document> documents = documentRepository.findAllByMemberIdAndFolderIdIsNull(member.getId());
         return documents.stream().map(this::getDocumentFindResult).toList();
     }
 
