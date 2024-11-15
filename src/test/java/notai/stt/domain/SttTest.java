@@ -4,6 +4,7 @@ import notai.pageRecording.domain.PageRecording;
 import notai.recording.domain.Recording;
 import notai.stt.application.command.UpdateSttResultCommand;
 import notai.stt.application.dto.SttPageMatchedDto;
+import notai.sttTask.domain.SttTask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import org.junit.jupiter.api.Test;
@@ -20,24 +21,23 @@ class SttTest {
     @Test
     void 페이지_매칭_빈_페이지_리스트() {
         // given
-        Recording recording = mock(Recording.class);
-        Stt stt = new Stt(recording);
         List<UpdateSttResultCommand.Word> words = List.of(
                 new UpdateSttResultCommand.Word("테스트", 1.0, 2.0)
         );
 
         // when
-        SttPageMatchedDto result = stt.matchWordsWithPages(words, List.of());
+        SttPageMatchedDto result = Stt.matchWordsWithPages(words, List.of());
 
         // then
         assertThat(result.pageContents()).isEmpty();
     }
 
+
     @Test
     void 페이지_매칭_정상_케이스() {
         // given
-        Recording recording = mock(Recording.class);
-        Stt stt = new Stt(recording);
+        SttTask sttTask = mock(SttTask.class);
+        Stt stt = new Stt(sttTask);
 
         List<UpdateSttResultCommand.Word> words = List.of(
                 new UpdateSttResultCommand.Word("첫번째", 1.0, 2.0),
@@ -67,7 +67,7 @@ class SttTest {
     @Test
     void 페이지_컨텐츠로부터_STT_엔티티_생성() {
         // given
-        Recording recording = mock(Recording.class);
+        SttTask sttTask = mock(SttTask.class);
         List<SttPageMatchedDto.PageMatchedWord> words = List.of(
                 new SttPageMatchedDto.PageMatchedWord("테스트", 100, 200),
                 new SttPageMatchedDto.PageMatchedWord("단어", 300, 400)
@@ -79,10 +79,11 @@ class SttTest {
         );
 
         // when
-        Stt result = Stt.createFromPageContent(recording, content);
+        Stt result = Stt.createFromPageContent(sttTask, content);
 
         // then
         assertAll(
+                () -> assertThat(result.getSttTask()).isEqualTo(sttTask),
                 () -> assertThat(result.getPageNumber()).isEqualTo(1),
                 () -> assertThat(result.getContent()).isEqualTo("테스트 단어"),
                 () -> assertThat(result.getStartTime()).isEqualTo(100),
@@ -90,11 +91,12 @@ class SttTest {
         );
     }
 
+
     @Test
     void 페이지_매칭_비순차적_페이지_번호() {
         // given
-        Recording recording = mock(Recording.class);
-        Stt stt = new Stt(recording);
+        SttTask sttTask = mock(SttTask.class);
+        Stt stt = new Stt(sttTask);
 
         List<UpdateSttResultCommand.Word> words = List.of(
                 new UpdateSttResultCommand.Word("word1", 1.0, 2.0),
@@ -130,8 +132,8 @@ class SttTest {
     @Test
     void 페이지_매칭_시간_경계값_테스트() {
         // given
-        Recording recording = mock(Recording.class);
-        Stt stt = new Stt(recording);
+        SttTask sttTask = mock(SttTask.class);
+        Stt stt = new Stt(sttTask);
 
         List<UpdateSttResultCommand.Word> words = List.of(
                 new UpdateSttResultCommand.Word("경계단어1", 2.99, 3.5),  // 첫 페이지 끝에 걸침
@@ -164,8 +166,8 @@ class SttTest {
     @Test
     void 페이지_매칭_마지막_페이지_특수처리() {
         // given
-        Recording recording = mock(Recording.class);
-        Stt stt = new Stt(recording);
+        SttTask sttTask = mock(SttTask.class);
+        Stt stt = new Stt(sttTask);
 
         List<UpdateSttResultCommand.Word> words = List.of(
                 new UpdateSttResultCommand.Word("정상단어", 1.0, 2.0),
@@ -194,7 +196,7 @@ class SttTest {
     @Test
     void 매칭_결과로부터_여러_STT_엔티티_생성() {
         // given
-        Recording recording = mock(Recording.class);
+        SttTask sttTask = mock(SttTask.class);
         List<SttPageMatchedDto.PageMatchedContent> contents = List.of(
                 new SttPageMatchedDto.PageMatchedContent(
                         1,
@@ -216,19 +218,19 @@ class SttTest {
         SttPageMatchedDto matchedResult = new SttPageMatchedDto(contents);
 
         // when
-        List<Stt> results = Stt.createFromMatchedResult(recording, matchedResult);
+        List<Stt> results = Stt.createFromMatchedResult(sttTask, matchedResult);
 
         // then
         assertAll(() -> assertThat(results).hasSize(2), () -> {
             Stt firstStt = results.get(0);
-            assertThat(firstStt.getRecording()).isEqualTo(recording);
+            assertThat(firstStt.getSttTask()).isEqualTo(sttTask);
             assertThat(firstStt.getPageNumber()).isEqualTo(1);
             assertThat(firstStt.getContent()).isEqualTo("첫번째 페이지");
             assertThat(firstStt.getStartTime()).isEqualTo(1);
             assertThat(firstStt.getEndTime()).isEqualTo(3);
         }, () -> {
             Stt secondStt = results.get(1);
-            assertThat(secondStt.getRecording()).isEqualTo(recording);
+            assertThat(secondStt.getSttTask()).isEqualTo(sttTask);
             assertThat(secondStt.getPageNumber()).isEqualTo(2);
             assertThat(secondStt.getContent()).isEqualTo("두번째 페이지");
             assertThat(secondStt.getStartTime()).isEqualTo(4);
@@ -239,11 +241,11 @@ class SttTest {
     @Test
     void 매칭_결과가_비어있을때_빈_리스트_반환() {
         // given
-        Recording recording = mock(Recording.class);
+        SttTask sttTask = mock(SttTask.class);
         SttPageMatchedDto matchedResult = new SttPageMatchedDto(List.of());
 
         // when
-        List<Stt> results = Stt.createFromMatchedResult(recording, matchedResult);
+        List<Stt> results = Stt.createFromMatchedResult(sttTask, matchedResult);
 
         // then
         assertThat(results).isEmpty();
@@ -252,8 +254,8 @@ class SttTest {
     @Test
     void 페이지_매칭_결과_순서_보장() {
         // given
-        Recording recording = mock(Recording.class);
-        Stt stt = new Stt(recording);
+        SttTask sttTask = mock(SttTask.class);
+        Stt stt = new Stt(sttTask);
 
         // startTime 기준으로 정렬된 words
         List<UpdateSttResultCommand.Word> words = List.of(

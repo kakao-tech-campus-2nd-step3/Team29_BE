@@ -27,20 +27,21 @@ public class SttService {
      * AI 서버로부터 받은 STT 결과를 처리하여 페이지별 STT 데이터를 생성하고 저장합니다.
      * 1. STT 테스크와 관련 엔티티들을 조회
      * 2. 음성 인식된 단어들을 페이지와 매칭
-     * 3. 매칭 결과를 저장하고 테스크를 완료 처리
+     * 3. 테스크를 완료처리하고 매칭 결과 저장
      */
     public void updateSttResult(UpdateSttResultCommand command) {
         SttTask sttTask = sttTaskRepository.getById(command.taskId());
-        Stt stt = sttTask.getStt();
-        Recording recording = stt.getRecording();
+        Recording recording = sttTask.getRecording();
 
-        List<PageRecording> pageRecordings = pageRecordingRepository.findAllByRecordingIdOrderByStartTime(recording.getId());
+        List<PageRecording> pageRecordings =
+                pageRecordingRepository.findAllByRecordingIdOrderByStartTime(recording.getId());
 
-        SttPageMatchedDto matchedResult = stt.matchWordsWithPages(command.words(), pageRecordings);
-        List<Stt> pageMatchedSttResults = Stt.createFromMatchedResult(recording, matchedResult);
-        sttRepository.saveAll(pageMatchedSttResults);
+        SttPageMatchedDto matchedResult = Stt.matchWordsWithPages(command.words(), pageRecordings);
+        List<Stt> pageMatchedSttResults = Stt.createFromMatchedResult(sttTask, matchedResult);
 
         sttTask.complete();
         sttTaskRepository.save(sttTask);
+
+        sttRepository.saveAll(pageMatchedSttResults);
     }
 }

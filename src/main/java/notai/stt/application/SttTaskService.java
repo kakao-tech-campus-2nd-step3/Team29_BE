@@ -11,7 +11,6 @@ import notai.llm.domain.TaskStatus;
 import notai.recording.domain.Recording;
 import notai.recording.domain.RecordingRepository;
 import notai.stt.application.command.SttRequestCommand;
-import notai.stt.domain.Stt;
 import notai.stt.domain.SttRepository;
 import notai.sttTask.domain.SttTask;
 import notai.sttTask.domain.SttTaskRepository;
@@ -38,14 +37,14 @@ public class SttTaskService {
 
         try {
             byte[] audioBytes = Files.readAllBytes(audioFile.toPath());
-            
+
             ByteArrayResource resource = new ByteArrayResource(audioBytes) {
                 @Override
                 public String getFilename() {
                     return audioFile.getName();
                 }
             };
-            
+
             TaskResponse response = aiClient.submitSttTask(resource);
             createAndSaveSttTask(recording, response);
         } catch (IOException e) {
@@ -62,10 +61,7 @@ public class SttTaskService {
     }
 
     private void createAndSaveSttTask(Recording recording, TaskResponse response) {
-        Stt stt = new Stt(recording);
-        sttRepository.save(stt);
-
-        SttTask sttTask = new SttTask(response.taskId(), stt, TaskStatus.PENDING);
+        SttTask sttTask = new SttTask(response.taskId(), TaskStatus.PENDING, recording);
         sttTaskRepository.save(sttTask);
     }
 }

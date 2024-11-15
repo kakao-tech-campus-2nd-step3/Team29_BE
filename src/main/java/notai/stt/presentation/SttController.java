@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/stt")
 @RequiredArgsConstructor
 public class SttController {
-        private final SttQueryService sttQueryService;
+    private final SttQueryService sttQueryService;
 
     @GetMapping("/documents/{documentId}/pages/{pageNumber}")
     public SttPageResponse getSttByPage(

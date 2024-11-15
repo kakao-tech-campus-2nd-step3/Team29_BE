@@ -34,12 +34,9 @@ public class AnnotationQueryService {
         document.validateOwner(member);
 
         List<Annotation> annotations = annotationRepository.findByDocumentIdAndPageNumberIn(documentId, pageNumbers);
-        if (annotations.isEmpty()) {
-            throw new NotFoundException(ANNOTATION_NOT_FOUND);
-        }
 
         return annotations.stream()
                 .map(AnnotationResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
