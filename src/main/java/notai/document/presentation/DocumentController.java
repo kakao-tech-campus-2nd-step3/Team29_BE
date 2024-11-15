@@ -36,18 +36,18 @@ public class DocumentController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentSaveResponse> saveDocument(
-            @Auth Member member,
+            @Auth Long memberId,
             @PathVariable Long folderId,
-            @Parameter(content = @Content(mediaType = MediaType.APPLICATION_PDF_VALUE))
-            @RequestPart MultipartFile pdfFile,
+            @Parameter(content = @Content(mediaType = MediaType.APPLICATION_PDF_VALUE)) @RequestPart
+            MultipartFile pdfFile,
             @RequestPart DocumentSaveRequest documentSaveRequest
     ) {
 
         DocumentSaveResult documentSaveResult;
         if (folderId.equals(ROOT_FOLDER_ID)) {
-            documentSaveResult = documentService.saveRootDocument(member, pdfFile, documentSaveRequest);
+            documentSaveResult = documentService.saveRootDocument(memberId, pdfFile, documentSaveRequest);
         } else {
-            documentSaveResult = documentService.saveDocument(member, folderId, pdfFile, documentSaveRequest);
+            documentSaveResult = documentService.saveDocument(memberId, folderId, pdfFile, documentSaveRequest);
         }
         DocumentSaveResponse response = DocumentSaveResponse.from(documentSaveResult);
         String url = String.format(FOLDER_URL_FORMAT, folderId, response.id());
@@ -56,13 +56,12 @@ public class DocumentController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<DocumentUpdateResponse> updateDocument(
-            @Auth Member member,
+            @Auth Long memberId,
             @PathVariable Long folderId,
             @PathVariable Long id,
             @RequestBody DocumentUpdateRequest documentUpdateRequest
     ) {
-        DocumentUpdateResult documentUpdateResult = documentService.updateDocument(
-                member,
+        DocumentUpdateResult documentUpdateResult = documentService.updateDocument(memberId,
                 folderId,
                 id,
                 documentUpdateRequest
@@ -73,11 +72,11 @@ public class DocumentController {
 
     @GetMapping
     public ResponseEntity<List<DocumentFindResponse>> getDocuments(
-            @Auth Member member, @PathVariable Long folderId
+            @Auth Long memberId, @PathVariable Long folderId
     ) {
         List<DocumentFindResult> documentResults;
         if (folderId.equals(ROOT_FOLDER_ID)) {
-            documentResults = documentQueryService.findRootDocuments(member);
+            documentResults = documentQueryService.findRootDocuments(memberId);
         } else {
             documentResults = documentQueryService.findDocuments(folderId);
         }
@@ -88,9 +87,9 @@ public class DocumentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDocument(
-            @Auth Member member, @PathVariable Long folderId, @PathVariable Long id
+            @Auth Long memberId, @PathVariable Long folderId, @PathVariable Long id
     ) {
-        documentService.deleteDocument(member, folderId, id);
+        documentService.deleteDocument(memberId, folderId, id);
         return ResponseEntity.noContent().build();
     }
 }

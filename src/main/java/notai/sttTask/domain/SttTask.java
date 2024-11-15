@@ -1,6 +1,5 @@
 package notai.sttTask.domain;
 
-import static jakarta.persistence.CascadeType.PERSIST;
 import jakarta.persistence.*;
 import static jakarta.persistence.FetchType.LAZY;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import notai.common.domain.RootEntity;
 import notai.llm.domain.TaskStatus;
-import notai.stt.domain.Stt;
+import notai.recording.domain.Recording;
 
 import java.util.UUID;
 
@@ -22,19 +21,20 @@ public class SttTask extends RootEntity<UUID> {
     @Id
     private UUID id;
 
-    @OneToOne(fetch = LAZY, cascade = PERSIST)
-    @JoinColumn(name = "stt_id")
-    private Stt stt;
+    @NotNull
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "recording_id")
+    private Recording recording;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private TaskStatus status;
 
-    public SttTask(UUID id, Stt stt, TaskStatus status) {
+    public SttTask(UUID id, TaskStatus status, Recording recording) {
         this.id = id;
-        this.stt = stt;
         this.status = status;
+        this.recording = recording;
     }
 
     public void complete() {

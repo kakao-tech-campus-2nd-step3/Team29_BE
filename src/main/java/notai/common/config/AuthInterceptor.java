@@ -31,6 +31,10 @@ public class AuthInterceptor implements HandlerInterceptor {
         String token = header.substring(BEARER_PREFIX_LENGTH);
         try {
             Long memberId = tokenService.extractMemberId(token);
+            if (memberId == null) {
+                throw new UnAuthorizedException(INVALID_ACCESS_TOKEN);
+            }
+
             request.setAttribute("memberId", memberId);
         } catch (Exception e) {
             throw new UnAuthorizedException(INVALID_ACCESS_TOKEN);

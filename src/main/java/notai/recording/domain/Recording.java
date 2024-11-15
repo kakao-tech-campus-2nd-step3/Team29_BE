@@ -40,7 +40,7 @@ public class Recording extends RootEntity<Long> {
     }
 
     public void validateDocumentOwnership(Document document) {
-        if (this.document.getId().equals(document.getId())) {
+        if (!this.document.getId().equals(document.getId())) {
             throw new NotFoundException(RECORDING_NOT_FOUND);
         }
     }

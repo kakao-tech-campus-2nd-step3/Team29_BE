@@ -19,8 +19,7 @@ public enum ErrorMessages {
 
     // folder
     FOLDER_NOT_FOUND("폴더를 찾을 수 없습니다."),
-
-    // llm task
+    FOLDER_AND_DOCUMENT_INVALID_RESPONSE("허용하지 않는 데이터 타입입니다."), // llm task
     LLM_TASK_LOG_NOT_FOUND("AI 작업 기록을 찾을 수 없습니다."),
     LLM_TASK_RESULT_ERROR("AI 요약 및 문제 생성 중에 문제가 발생했습니다."),
 
@@ -37,15 +36,15 @@ public enum ErrorMessages {
     RECORDING_NOT_FOUND("녹음 파일을 찾을 수 없습니다."),
 
     // external api call
-    KAKAO_API_ERROR("카카오 API 호출에 예외가 발생했습니다."), 
+    KAKAO_API_ERROR("카카오 API 호출에 예외가 발생했습니다."),
     AI_SERVER_ERROR("AI 서버 API 호출에 예외가 발생했습니다."),
     SLACK_API_ERROR("슬랙 API 호출에 예외가 발생했습니다."),
 
     // auth
-    INVALID_ACCESS_TOKEN("유효하지 않은 토큰입니다."), 
-    INVALID_REFRESH_TOKEN("유요하지 않은 Refresh Token입니다."), 
-    EXPIRED_REFRESH_TOKEN("만료된 Refresh Token입니다."), 
-    INVALID_LOGIN_TYPE("지원하지 않는 소셜 로그인 타입입니다."), 
+    INVALID_ACCESS_TOKEN("유효하지 않은 토큰입니다."),
+    INVALID_REFRESH_TOKEN("유효하지 않은 Refresh Token입니다."),
+    EXPIRED_REFRESH_TOKEN("만료된 Refresh Token입니다."),
+    INVALID_LOGIN_TYPE("지원하지 않는 소셜 로그인 타입입니다."),
     NOTFOUND_ACCESS_TOKEN("토큰 정보가 존재하지 않습니다."),
 
     // stt

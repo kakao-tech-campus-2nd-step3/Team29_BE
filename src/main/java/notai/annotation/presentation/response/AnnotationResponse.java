@@ -2,6 +2,8 @@ package notai.annotation.presentation.response;
 
 import notai.annotation.domain.Annotation;
 
+import java.time.LocalDateTime;
+
 public record AnnotationResponse(
         Long id,
         Long documentId,
@@ -11,8 +13,8 @@ public record AnnotationResponse(
         int width,
         int height,
         String content,
-        String createdAt,
-        String updatedAt
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 
     public static AnnotationResponse from(Annotation annotation) {
@@ -25,8 +27,8 @@ public record AnnotationResponse(
                 annotation.getWidth(),
                 annotation.getHeight(),
                 annotation.getContent(),
-                annotation.getCreatedAt().toString(),
-                annotation.getUpdatedAt().toString()
+                annotation.getCreatedAt(),
+                annotation.getUpdatedAt()
         );
     }
 }

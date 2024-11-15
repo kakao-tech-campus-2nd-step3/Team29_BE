@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
@@ -47,7 +49,7 @@ public class KakaoOauthClientTest {
 
         KakaoMemberResponse kakaoMemberResponse = new KakaoMemberResponse(id, hasSignedUp, connectedAt, kakaoAccount);
 
-        when(kakaoClient.fetchMember(accessToken)).thenReturn(kakaoMemberResponse);
+        when(kakaoClient.fetchMember(eq("Bearer " + accessToken))).thenReturn(kakaoMemberResponse);
 
         Member member = kakaoOauthClient.fetchMember(accessToken);
 

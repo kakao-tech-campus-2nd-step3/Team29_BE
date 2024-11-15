@@ -34,39 +34,39 @@ public class LlmTaskController {
 
     @GetMapping("/status/{documentId}")
     public ResponseEntity<LlmTaskOverallStatusResponse> fetchOverallStatus(
-            @Auth Member member, @PathVariable("documentId") Long documentId
+            @Auth Long memberId, @PathVariable("documentId") Long documentId
     ) {
-        LlmTaskOverallStatusResult result = llmTaskQueryService.fetchOverallStatus(member, documentId);
+        LlmTaskOverallStatusResult result = llmTaskQueryService.fetchOverallStatus(memberId, documentId);
         return ResponseEntity.ok(LlmTaskOverallStatusResponse.from(result));
     }
 
     @GetMapping("/status/{documentId}/{pageNumber}")
     public ResponseEntity<LlmTaskPageStatusResponse> fetchPageStatus(
-            @Auth Member member,
+            @Auth Long memberId,
             @PathVariable("documentId") Long documentId,
             @PathVariable("pageNumber") Integer pageNumber
     ) {
         LlmTaskPageStatusCommand command = LlmTaskPageStatusCommand.of(documentId, pageNumber);
-        LlmTaskPageStatusResult result = llmTaskQueryService.fetchPageStatus(member, command);
+        LlmTaskPageStatusResult result = llmTaskQueryService.fetchPageStatus(memberId, command);
         return ResponseEntity.ok(LlmTaskPageStatusResponse.from(result));
     }
 
     @GetMapping("/results/{documentId}")
     public ResponseEntity<LlmTaskAllPagesResultResponse> findAllPagesResult(
-            @Auth Member member, @PathVariable("documentId") Long documentId
+            @Auth Long memberId, @PathVariable("documentId") Long documentId
     ) {
-        LlmTaskAllPagesResult result = llmTaskQueryService.findAllPagesResult(member, documentId);
+        LlmTaskAllPagesResult result = llmTaskQueryService.findAllPagesResult(memberId, documentId);
         return ResponseEntity.ok(LlmTaskAllPagesResultResponse.from(result));
     }
 
     @GetMapping("/results/{documentId}/{pageNumber}")
     public ResponseEntity<LlmTaskPageResultResponse> findPageResult(
-            @Auth Member member,
+            @Auth Long memberId,
             @PathVariable("documentId") Long documentId,
             @PathVariable("pageNumber") Integer pageNumber
     ) {
         LlmTaskPageResultCommand command = LlmTaskPageResultCommand.of(documentId, pageNumber);
-        LlmTaskPageResult result = llmTaskQueryService.findPageResult(member, command);
+        LlmTaskPageResult result = llmTaskQueryService.findPageResult(memberId, command);
         return ResponseEntity.ok(LlmTaskPageResultResponse.from(result));
     }
 

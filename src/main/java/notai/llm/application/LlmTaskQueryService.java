@@ -16,6 +16,7 @@ import notai.llm.application.result.LlmTaskPageStatusResult;
 import notai.llm.domain.TaskStatus;
 import notai.llm.query.LlmTaskQueryRepository;
 import notai.member.domain.Member;
+import notai.member.domain.MemberRepository;
 import notai.problem.domain.ProblemRepository;
 import notai.problem.query.result.ProblemPageContentResult;
 import notai.summary.domain.SummaryRepository;
@@ -37,9 +38,11 @@ public class LlmTaskQueryService {
     private final DocumentRepository documentRepository;
     private final SummaryRepository summaryRepository;
     private final ProblemRepository problemRepository;
+    private final MemberRepository memberRepository;
 
-    public LlmTaskOverallStatusResult fetchOverallStatus(Member member, Long documentId) {
+    public LlmTaskOverallStatusResult fetchOverallStatus(Long memberId, Long documentId) {
         Document foundDocument = documentRepository.getById(documentId);
+        Member member = memberRepository.getById(memberId);
         foundDocument.validateOwner(member);
 
         List<Long> summaryIds = summaryRepository.getSummaryIdsByDocumentId(documentId);
@@ -59,8 +62,9 @@ public class LlmTaskQueryService {
         return LlmTaskOverallStatusResult.of(documentId, IN_PROGRESS, totalPages, completedPages);
     }
 
-    public LlmTaskPageStatusResult fetchPageStatus(Member member, LlmTaskPageStatusCommand command) { // TODO: 페이지 번호 검증 추가
+    public LlmTaskPageStatusResult fetchPageStatus(Long memberId, LlmTaskPageStatusCommand command) { // TODO: 페이지 번호 검증 추가
         Document foundDocument = documentRepository.getById(command.documentId());
+        Member member = memberRepository.getById(memberId);
         foundDocument.validateOwner(member);
 
         Long summaryId =
@@ -72,8 +76,9 @@ public class LlmTaskQueryService {
         return LlmTaskPageStatusResult.from(llmTaskQueryRepository.getTaskStatusBySummaryId(summaryId));
     }
 
-    public LlmTaskAllPagesResult findAllPagesResult(Member member, Long documentId) {
+    public LlmTaskAllPagesResult findAllPagesResult(Long memberId, Long documentId) {
         Document foundDocument = documentRepository.getById(documentId);
+        Member member = memberRepository.getById(memberId);
         foundDocument.validateOwner(member);
 
         List<SummaryPageContentResult> summaryResults =
@@ -98,8 +103,9 @@ public class LlmTaskQueryService {
         return LlmTaskAllPagesResult.of(documentId, results);
     }
 
-    public LlmTaskPageResult findPageResult(Member member, LlmTaskPageResultCommand command) { // TODO: 페이지 번호 검증 추가
+    public LlmTaskPageResult findPageResult(Long memberId, LlmTaskPageResultCommand command) { // TODO: 페이지 번호 검증 추가
         Document foundDocument = documentRepository.getById(command.documentId());
+        Member member = memberRepository.getById(memberId);
         foundDocument.validateOwner(member);
 
         String summaryResult = summaryRepository.getSummaryContentByDocumentIdAndPageNumber(

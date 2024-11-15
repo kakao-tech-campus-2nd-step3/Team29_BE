@@ -13,8 +13,12 @@ import notai.llm.application.command.SummaryAndProblemUpdateCommand;
 import notai.llm.application.result.LlmTaskSubmitResult;
 import notai.llm.domain.LlmTask;
 import notai.llm.domain.LlmTaskRepository;
+import notai.ocr.domain.OCR;
+import notai.ocr.domain.OCRRepository;
 import notai.problem.domain.Problem;
 import notai.problem.domain.ProblemRepository;
+import notai.stt.domain.Stt;
+import notai.stt.domain.SttRepository;
 import notai.summary.domain.Summary;
 import notai.summary.domain.SummaryRepository;
 import org.springframework.stereotype.Service;
@@ -43,6 +47,8 @@ public class LlmTaskService {
     private final ProblemRepository problemRepository;
     private final AnnotationRepository annotationRepository;
     private final AiClient aiClient;
+    private final OCRRepository ocrRepository;
+    private final SttRepository sttRepository;
 
     public LlmTaskSubmitResult submitTasks(LlmTaskSubmitCommand command) { // TODO: 페이지 번호 검증 추가
         Document foundDocument = documentRepository.getById(command.documentId());
@@ -64,8 +70,17 @@ public class LlmTaskService {
                 List.of()
         ).stream().map(Annotation::getContent).collect(Collectors.joining(", "));
 
-        // Todo OCR, STT 결과 전달
-        UUID taskId = sendRequestToAIServer("ocrText", "stt", annotationContents);
+        List<Stt> sttResults = sttRepository.findAllByDocumentIdAndPageNumber(foundDocument.getId(), pageNumber);
+        String sttContents = sttResults.stream()
+                .map(Stt::getContent)
+                .collect(Collectors.joining(" "));
+
+        List<OCR> ocrResults = ocrRepository.findAllByDocumentIdAndPageNumber(foundDocument.getId(), pageNumber);
+        String ocrContents = ocrResults.stream()
+                .map(OCR::getContent)
+                .collect(Collectors.joining(" "));
+
+        UUID taskId = sendRequestToAIServer(ocrContents, sttContents, annotationContents);
 
         Optional<Summary> foundSummary = summaryRepository.findByDocumentAndPageNumber(foundDocument, pageNumber);
         Optional<Problem> foundProblem = problemRepository.findByDocumentAndPageNumber(foundDocument, pageNumber);

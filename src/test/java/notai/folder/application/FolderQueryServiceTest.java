@@ -44,7 +44,7 @@ class FolderQueryServiceTest {
 
         when(folderRepository.findAllByMemberIdAndParentFolderIsNull(any(Long.class))).thenReturn(expectedResults);
         //when
-        List<FolderFindResult> folders = folderQueryService.getFolders(member, null);
+        List<FolderFindResult> folders = folderQueryService.getFolders(member.getId(), null);
 
         Assertions.assertThat(folders.size()).isEqualTo(1);
     }
@@ -61,7 +61,7 @@ class FolderQueryServiceTest {
         when(folderRepository.findAllByMemberIdAndParentFolderId(any(Long.class), any(Long.class))).thenReturn(
                 expectedResults);
         //when
-        List<FolderFindResult> folders = folderQueryService.getFolders(member, 1L);
+        List<FolderFindResult> folders = folderQueryService.getFolders(member.getId(), 1L);
 
         Assertions.assertThat(folders.size()).isEqualTo(2);
     }

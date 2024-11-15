@@ -23,12 +23,12 @@ public class RecordingController {
 
     @PostMapping
     public ResponseEntity<RecordingSaveResponse> saveRecording(
-            @Auth Member member,
+            @Auth Long memberId,
             @PathVariable("documentId") Long documentId,
             @RequestBody @Valid RecordingSaveRequest request
     ) {
         RecordingSaveCommand command = request.toCommand(documentId);
-        RecordingSaveResult result = recordingService.saveRecording(member, command);
+        RecordingSaveResult result = recordingService.saveRecording(memberId, command);
         return ResponseEntity.status(CREATED).body(RecordingSaveResponse.from(result));
     }
 }

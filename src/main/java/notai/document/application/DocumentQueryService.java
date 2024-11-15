@@ -6,11 +6,13 @@ import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.member.domain.Member;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DocumentQueryService {
 
     private final DocumentRepository documentRepository;
@@ -20,8 +22,8 @@ public class DocumentQueryService {
         return documents.stream().map(this::getDocumentFindResult).toList();
     }
 
-    public List<DocumentFindResult> findRootDocuments(Member member) {
-        List<Document> documents = documentRepository.findAllByMemberIdAndFolderIdIsNull(member.getId());
+    public List<DocumentFindResult> findRootDocuments(Long memberId) {
+        List<Document> documents = documentRepository.findAllByMemberIdAndFolderIdIsNull(memberId);
         return documents.stream().map(this::getDocumentFindResult).toList();
     }
 

@@ -14,27 +14,33 @@ import notai.llm.application.command.SummaryAndProblemUpdateCommand;
 import notai.llm.application.result.LlmTaskSubmitResult;
 import notai.llm.domain.LlmTask;
 import notai.llm.domain.LlmTaskRepository;
+import notai.llm.domain.TaskStatus;
 import notai.member.domain.Member;
 import notai.member.domain.OauthId;
 import notai.member.domain.OauthProvider;
+import notai.ocr.domain.OCR;
+import notai.ocr.domain.OCRRepository;
 import notai.problem.domain.Problem;
 import notai.problem.domain.ProblemRepository;
+import notai.recording.domain.Recording;
+import notai.stt.domain.Stt;
+import notai.stt.domain.SttRepository;
+import notai.sttTask.domain.SttTask;
 import notai.summary.domain.Summary;
 import notai.summary.domain.SummaryRepository;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LlmTaskServiceTest {
@@ -56,6 +62,12 @@ class LlmTaskServiceTest {
 
     @Mock
     private AnnotationRepository annotationRepository;
+
+    @Mock
+    private SttRepository sttRepository;
+
+    @Mock
+    private OCRRepository ocrRepository;
 
     @Mock
     private AiClient aiClient;
@@ -87,6 +99,11 @@ class LlmTaskServiceTest {
         Member member = new Member(new OauthId("12345", OauthProvider.KAKAO), "test@example.com", "TestUser");
         Folder folder = new Folder(member, "TestFolder");
         Document document = new Document(folder, member, "TestDocument", "http://example.com/test.pdf", 43);
+        Recording recording = new Recording(document);
+
+        UUID taskId = UUID.randomUUID();
+        SttTask sttTask = new SttTask(taskId, TaskStatus.IN_PROGRESS, recording);
+        List<Stt> stts = List.of(new Stt(sttTask));
 
         List<Annotation> annotations = List.of(
                 new Annotation(document, 1, 10, 20, 100, 50, "Annotation 1"),
@@ -94,11 +111,14 @@ class LlmTaskServiceTest {
                 new Annotation(document, 2, 50, 60, 120, 70, "Annotation 3")
         );
 
-        UUID taskId = UUID.randomUUID();
+        List<OCR> ocrs = List.of(new OCR(document, 1, "TestDocumentContent"));
+
         TaskResponse taskResponse = new TaskResponse(taskId, "llm");
 
         given(documentRepository.getById(anyLong())).willReturn(document);
         given(annotationRepository.findByDocumentId(anyLong())).willReturn(annotations);
+        given(sttRepository.findAllByDocumentIdAndPageNumber(any(), anyInt())).willReturn(stts);
+        given(ocrRepository.findAllByDocumentIdAndPageNumber(any(), anyInt())).willReturn(ocrs);
         given(aiClient.submitLlmTask(any(LlmTaskRequest.class))).willReturn(taskResponse);
         given(llmTaskRepository.save(any(LlmTask.class))).willAnswer(invocation -> invocation.getArgument(0));
 
@@ -113,8 +133,10 @@ class LlmTaskServiceTest {
                 () -> verify(llmTaskRepository, times(2)).save(any(LlmTask.class))
         );
 
-        verify(aiClient).submitLlmTask(argThat(request -> request.keyboardNote().equals("Annotation 1, Annotation 2")));
-        verify(aiClient).submitLlmTask(argThat(request -> request.keyboardNote().equals("Annotation 3")));
+        verify(aiClient).submitLlmTask(argThat(request ->
+                request.keyboardNote().equals("Annotation 1, Annotation 2")));
+        verify(aiClient).submitLlmTask(argThat(request ->
+                request.keyboardNote().equals("Annotation 3")));
     }
 
     @Test

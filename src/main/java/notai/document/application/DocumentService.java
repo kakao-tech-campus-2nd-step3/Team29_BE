@@ -10,49 +10,52 @@ import notai.document.presentation.request.DocumentUpdateRequest;
 import notai.folder.domain.Folder;
 import notai.folder.domain.FolderRepository;
 import notai.member.domain.Member;
+import notai.member.domain.MemberRepository;
 import notai.ocr.application.OCRService;
 import notai.pdf.PdfService;
 import notai.pdf.result.PdfSaveResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DocumentService {
 
     private final PdfService pdfService;
     private final OCRService ocrService;
     private final DocumentRepository documentRepository;
     private final FolderRepository folderRepository;
+    private final MemberRepository memberRepository;
 
     private static final Long ROOT_FOLDER_ID = -1L;
 
-
     public DocumentSaveResult saveDocument(
-            Member member, Long folderId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
+            Long memberId, Long folderId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
         PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
-        Document document = saveAndReturnDocument(member, folderId, documentSaveRequest, pdfSaveResult);
+        Document document = saveAndReturnDocument(memberId, folderId, documentSaveRequest, pdfSaveResult);
         ocrService.saveOCR(document, pdfSaveResult.pdf());
         return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
 
     public DocumentSaveResult saveRootDocument(
-            Member member, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
+            Long memberId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
         PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
-        Document document = saveAndReturnRootDocument(member, documentSaveRequest, pdfSaveResult);
+        Document document = saveAndReturnRootDocument(memberId, documentSaveRequest, pdfSaveResult);
         ocrService.saveOCR(document, pdfSaveResult.pdf());
         return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
 
     public DocumentUpdateResult updateDocument(
-            Member member, Long folderId, Long documentId, DocumentUpdateRequest documentUpdateRequest
+            Long memberId, Long folderId, Long documentId, DocumentUpdateRequest documentUpdateRequest
     ) {
         Document document = documentRepository.getById(documentId);
-
+        Member member = memberRepository.getById(memberId);
         document.validateOwner(member);
 
         if (!folderId.equals(ROOT_FOLDER_ID)) {
@@ -64,10 +67,10 @@ public class DocumentService {
     }
 
     public void deleteDocument(
-            Member member, Long folderId, Long documentId
+            Long memberId, Long folderId, Long documentId
     ) {
         Document document = documentRepository.getById(documentId);
-
+        Member member = memberRepository.getById(memberId);
         document.validateOwner(member);
 
         if (!folderId.equals(ROOT_FOLDER_ID)) {
@@ -78,18 +81,19 @@ public class DocumentService {
     }
 
     public void deleteAllByFolder(
-            Member member, Folder folder
+            Long memberId, Folder folder
     ) {
         List<Document> documents = documentRepository.findAllByFolderId(folder.getId());
         for (Document document : documents) {
-            deleteDocument(member, folder.getId(), document.getId());
+            deleteDocument(memberId, folder.getId(), document.getId());
         }
     }
 
     private Document saveAndReturnDocument(
-            Member member, Long folderId, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
+            Long memberId, Long folderId, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
     ) {
         Folder folder = folderRepository.getById(folderId);
+        Member member = memberRepository.getById(memberId);
         Document document = new Document(folder,
                 member,
                 documentSaveRequest.name(),
@@ -100,8 +104,9 @@ public class DocumentService {
     }
 
     private Document saveAndReturnRootDocument(
-            Member member, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
+            Long memberId, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
     ) {
+        Member member = memberRepository.getById(memberId);
         Document document = new Document(member,
                 documentSaveRequest.name(),
                 pdfSaveResult.pdfUrl(),

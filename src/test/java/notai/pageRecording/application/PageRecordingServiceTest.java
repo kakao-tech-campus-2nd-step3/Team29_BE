@@ -3,6 +3,7 @@ package notai.pageRecording.application;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.member.domain.Member;
+import notai.member.domain.MemberRepository;
 import notai.pageRecording.application.command.PageRecordingSaveCommand;
 import notai.pageRecording.application.command.PageRecordingSaveCommand.PageRecordingSession;
 import notai.pageRecording.domain.PageRecording;
@@ -35,6 +36,9 @@ class PageRecordingServiceTest {
     private DocumentRepository documentRepository;
 
     @Mock
+    private MemberRepository memberRepository;
+
+    @Mock
     private Member member;
 
     @Mock
@@ -54,13 +58,13 @@ class PageRecordingServiceTest {
 
         Recording foundRecording = mock(Recording.class);
         given(recordingRepository.getById(recordingId)).willReturn(foundRecording);
-
+        given(memberRepository.getById(anyLong())).willReturn(member);
         given(documentRepository.getById(anyLong())).willReturn(document);
         willDoNothing().given(document).validateOwner(member);
         willDoNothing().given(foundRecording).validateDocumentOwnership(any(Document.class));
 
         // when
-        pageRecordingService.savePageRecording(member, command);
+        pageRecordingService.savePageRecording(member.getId(), command);
 
         // then
         verify(pageRecordingRepository, times(2)).save(any(PageRecording.class));

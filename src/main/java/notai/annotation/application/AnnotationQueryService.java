@@ -8,6 +8,7 @@ import notai.common.exception.type.NotFoundException;
 import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.member.domain.Member;
+import notai.member.domain.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,21 +23,20 @@ public class AnnotationQueryService {
 
     private final AnnotationRepository annotationRepository;
     private final DocumentRepository documentRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public List<AnnotationResponse> getAnnotationsByDocumentAndPageNumbers(
-            Member member, Long documentId, List<Integer> pageNumbers
+            Long memberId, Long documentId, List<Integer> pageNumbers
     ) {
         Document document = documentRepository.getById(documentId);
+        Member member = memberRepository.getById(memberId);
         document.validateOwner(member);
 
         List<Annotation> annotations = annotationRepository.findByDocumentIdAndPageNumberIn(documentId, pageNumbers);
-        if (annotations.isEmpty()) {
-            throw new NotFoundException(ANNOTATION_NOT_FOUND);
-        }
 
         return annotations.stream()
                 .map(AnnotationResponse::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

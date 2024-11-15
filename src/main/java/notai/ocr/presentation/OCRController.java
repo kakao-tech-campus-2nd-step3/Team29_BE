@@ -18,9 +18,9 @@ public class OCRController {
 
     @GetMapping
     public ResponseEntity<OCRFindResponse> getDocuments(
-            @Auth Member member, @PathVariable Long documentId, @RequestParam Integer pageNumber
+            @Auth Long memberId, @PathVariable Long documentId, @RequestParam Integer pageNumber
     ) {
-        OCRFindResult result = ocrQueryService.findOCR(member, documentId, pageNumber);
+        OCRFindResult result = ocrQueryService.findOCR(memberId, documentId, pageNumber);
         OCRFindResponse response = OCRFindResponse.from(result);
         return ResponseEntity.ok(response);
     }
