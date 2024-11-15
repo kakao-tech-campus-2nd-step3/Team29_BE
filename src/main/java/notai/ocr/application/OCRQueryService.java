@@ -1,7 +1,6 @@
 package notai.ocr.application;
 
 import lombok.RequiredArgsConstructor;
-import static notai.common.exception.ErrorMessages.OCR_RESULT_NOT_FOUND;
 import notai.common.exception.type.NotFoundException;
 import notai.member.domain.Member;
 import notai.member.domain.MemberRepository;
@@ -10,6 +9,8 @@ import notai.ocr.domain.OCR;
 import notai.ocr.domain.OCRRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static notai.common.exception.ErrorMessages.OCR_RESULT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

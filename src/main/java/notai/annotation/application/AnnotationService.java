@@ -8,6 +8,7 @@ import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.member.domain.Member;
 import notai.member.domain.MemberRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class AnnotationService {
     ) {
         Document document = documentRepository.getById(documentId);
         Member member = memberRepository.getById(memberId);
+
         document.validateOwner(member);
 
         Annotation annotation = new Annotation(document, pageNumber, x, y, width, height, content);

@@ -45,6 +45,7 @@ public class LlmTaskQueryService {
         Member member = memberRepository.getById(memberId);
         foundDocument.validateOwner(member);
 
+
         List<Long> summaryIds = summaryRepository.getSummaryIdsByDocumentId(documentId);
 
         if (summaryIds.isEmpty()) {

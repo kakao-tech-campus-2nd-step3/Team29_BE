@@ -37,14 +37,12 @@ public class SttTaskService {
 
         try {
             byte[] audioBytes = Files.readAllBytes(audioFile.toPath());
-
             ByteArrayResource resource = new ByteArrayResource(audioBytes) {
                 @Override
                 public String getFilename() {
                     return audioFile.getName();
                 }
             };
-
             TaskResponse response = aiClient.submitSttTask(resource);
             createAndSaveSttTask(recording, response);
         } catch (IOException e) {

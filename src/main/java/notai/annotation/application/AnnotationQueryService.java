@@ -9,6 +9,7 @@ import notai.document.domain.Document;
 import notai.document.domain.DocumentRepository;
 import notai.member.domain.Member;
 import notai.member.domain.MemberRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class AnnotationQueryService {
     ) {
         Document document = documentRepository.getById(documentId);
         Member member = memberRepository.getById(memberId);
+
         document.validateOwner(member);
 
         List<Annotation> annotations = annotationRepository.findByDocumentIdAndPageNumberIn(documentId, pageNumbers);

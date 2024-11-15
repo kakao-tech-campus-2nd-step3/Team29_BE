@@ -10,7 +10,6 @@ import notai.document.presentation.request.DocumentUpdateRequest;
 import notai.folder.domain.Folder;
 import notai.folder.domain.FolderRepository;
 import notai.member.domain.Member;
-import notai.member.domain.MemberRepository;
 import notai.ocr.application.OCRService;
 import notai.pdf.PdfService;
 import notai.pdf.result.PdfSaveResult;
@@ -29,30 +28,29 @@ public class DocumentService {
     private final OCRService ocrService;
     private final DocumentRepository documentRepository;
     private final FolderRepository folderRepository;
-    private final MemberRepository memberRepository;
 
     private static final Long ROOT_FOLDER_ID = -1L;
 
     public DocumentSaveResult saveDocument(
-            Long memberId, Long folderId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
+            Member member, Long folderId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
         PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
-        Document document = saveAndReturnDocument(memberId, folderId, documentSaveRequest, pdfSaveResult);
+        Document document = saveAndReturnDocument(member, folderId, documentSaveRequest, pdfSaveResult);
         ocrService.saveOCR(document, pdfSaveResult.pdf());
         return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
 
     public DocumentSaveResult saveRootDocument(
-            Long memberId, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
+            Member member, MultipartFile pdfFile, DocumentSaveRequest documentSaveRequest
     ) {
         PdfSaveResult pdfSaveResult = pdfService.savePdf(pdfFile);
-        Document document = saveAndReturnRootDocument(memberId, documentSaveRequest, pdfSaveResult);
+        Document document = saveAndReturnRootDocument(member, documentSaveRequest, pdfSaveResult);
         ocrService.saveOCR(document, pdfSaveResult.pdf());
         return DocumentSaveResult.of(document.getId(), document.getName(), document.getUrl());
     }
 
     public DocumentUpdateResult updateDocument(
-            Long memberId, Long folderId, Long documentId, DocumentUpdateRequest documentUpdateRequest
+            Member member, Long folderId, Long documentId, DocumentUpdateRequest documentUpdateRequest
     ) {
         Document document = documentRepository.getById(documentId);
         Member member = memberRepository.getById(memberId);
@@ -67,7 +65,7 @@ public class DocumentService {
     }
 
     public void deleteDocument(
-            Long memberId, Long folderId, Long documentId
+            Member member, Long folderId, Long documentId
     ) {
         Document document = documentRepository.getById(documentId);
         Member member = memberRepository.getById(memberId);
@@ -81,16 +79,16 @@ public class DocumentService {
     }
 
     public void deleteAllByFolder(
-            Long memberId, Folder folder
+            Member member, Folder folder
     ) {
         List<Document> documents = documentRepository.findAllByFolderId(folder.getId());
         for (Document document : documents) {
-            deleteDocument(memberId, folder.getId(), document.getId());
+            deleteDocument(member, folder.getId(), document.getId());
         }
     }
 
     private Document saveAndReturnDocument(
-            Long memberId, Long folderId, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
+            Member member, Long folderId, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
     ) {
         Folder folder = folderRepository.getById(folderId);
         Member member = memberRepository.getById(memberId);
@@ -104,9 +102,8 @@ public class DocumentService {
     }
 
     private Document saveAndReturnRootDocument(
-            Long memberId, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
+            Member member, DocumentSaveRequest documentSaveRequest, PdfSaveResult pdfSaveResult
     ) {
-        Member member = memberRepository.getById(memberId);
         Document document = new Document(member,
                 documentSaveRequest.name(),
                 pdfSaveResult.pdfUrl(),

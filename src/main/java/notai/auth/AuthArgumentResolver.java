@@ -25,7 +25,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Long resolveArgument(
+    public Member resolveArgument(
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
@@ -33,6 +33,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     ) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Long memberId = (Long) request.getAttribute("memberId");
-        return memberRepository.getById(memberId).getId();
+        return memberRepository.getById(memberId);
     }
 }

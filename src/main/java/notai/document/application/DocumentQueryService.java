@@ -22,8 +22,8 @@ public class DocumentQueryService {
         return documents.stream().map(this::getDocumentFindResult).toList();
     }
 
-    public List<DocumentFindResult> findRootDocuments(Long memberId) {
-        List<Document> documents = documentRepository.findAllByMemberIdAndFolderIdIsNull(memberId);
+    public List<DocumentFindResult> findRootDocuments(Member member) {
+        List<Document> documents = documentRepository.findAllByMemberIdAndFolderIdIsNull(member.getId());
         return documents.stream().map(this::getDocumentFindResult).toList();
     }
 
